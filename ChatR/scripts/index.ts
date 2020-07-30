@@ -1,4 +1,5 @@
 ﻿import * as signalR from "@microsoft/signalr";
+import { validURL, checkImage } from "./checkString";
 
 const divMessages: HTMLDivElement = document.querySelector("#divMessages");
 const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
@@ -9,11 +10,17 @@ const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
 
-connection.on("messageReceived", (username: string, message: string) => {
+interface Message {
+    author: string,
+    content: string,
+    type: string,
+}
+
+connection.on("messageReceived", (message : Message) => {
     let messages = document.createElement("div");
 
     messages.innerHTML =
-        `<div class="message-author">${username}</div><div>${message}</div>`;
+        `<div class="message-author">${message.author}</div><div>${message.content}</div>`;
 
     divMessages.appendChild(messages);
     divMessages.scrollTop = divMessages.scrollHeight;
@@ -30,6 +37,8 @@ tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
 btnSend.addEventListener("click", send);
 
 function send() {
-    connection.send("newMessage", username, tbMessage.value)
+    let message: Message = { author: "", content: tbMessage.value, type: "" }
+    connection.send("newMessage", message)
         .then(() => tbMessage.value = "");
 }
+
