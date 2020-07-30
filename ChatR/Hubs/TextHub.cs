@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,12 @@ namespace ChatR.Hubs
 
 
 
-        public void SaveMessageAsRecord()
+        public void SaveMessageAsRecord(string jsonObject)
         {
+
+            // Convert BlogSites object to JOSN string format  
+            IMessage message = JsonConvert.DeserializeObject<IMessage>(jsonObject);
+
             using (var scope = _scopeFactory.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<DbContext>();

@@ -16,9 +16,16 @@ interface Message {
     type: string,
 }
 
-connection.on("messageReceived", (message : Message) => {
-    let messages = document.createElement("div");
 
+function parseMessage(jsonString): Message {
+    let jsonObj: any = JSON.parse(jsonString);
+    let message: Message = <Message>jsonObj;
+    return message;
+}
+
+connection.on("messageReceived", (jsonString : string) => {
+    let messages = document.createElement("div");
+    let message = parseMessage(jsonString);
     messages.innerHTML =
         `<div class="message-author">${message.author}</div><div>${message.content}</div>`;
 
@@ -37,7 +44,7 @@ tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
 btnSend.addEventListener("click", send);
 
 function send() {
-    let message: Message = { author: "", content: tbMessage.value, type: "" }
+    let message: Message = { author: username.toString(), content: tbMessage.value, type: "text" }
     connection.send("newMessage", message)
         .then(() => tbMessage.value = "");
 }
