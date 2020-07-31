@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChatR.Models;
 
 namespace ChatR.Hubs
 {
@@ -16,9 +17,9 @@ namespace ChatR.Hubs
         {
             _scopeFactory = scopeFactory;
         }
-        public async Task NewMessage(IMessage message)
+        public async Task NewMessage(string jsonObj)
         {
-            await Clients.All.SendAsync("messageReceived", message.Author, message.Content);
+            await Clients.All.SendAsync("messageReceived", jsonObj);
         }
 
 
@@ -40,10 +41,4 @@ namespace ChatR.Hubs
         }
     }
 
-    public interface IMessage
-    {
-        public string Author { get; set; }
-        public string Content { get; set; }
-        public string Type { get; set; }
-    }
 }

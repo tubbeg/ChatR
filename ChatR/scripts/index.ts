@@ -1,5 +1,6 @@
 ﻿import * as signalR from "@microsoft/signalr";
 import { validURL, checkImage } from "./checkString";
+import { parseMessage, Message, MessageType } from "./message";
 
 const divMessages: HTMLDivElement = document.querySelector("#divMessages");
 const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
@@ -9,19 +10,6 @@ const username = new Date().getTime();
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
-
-interface Message {
-    author: string,
-    content: string,
-    type: string,
-}
-
-
-function parseMessage(jsonString): Message {
-    let jsonObj: any = JSON.parse(jsonString);
-    let message: Message = <Message>jsonObj;
-    return message;
-}
 
 connection.on("messageReceived", (jsonString : string) => {
     let messages = document.createElement("div");
@@ -44,7 +32,7 @@ tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
 btnSend.addEventListener("click", send);
 
 function send() {
-    let message: Message = { author: username.toString(), content: tbMessage.value, type: "text" }
+    let message: Message = { author: username.toString(), content: tbMessage.value, type: MessageType.Text}
     connection.send("newMessage", message)
         .then(() => tbMessage.value = "");
 }
