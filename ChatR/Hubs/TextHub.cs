@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ChatR.Models;
+using ChatR.Data;
 
 namespace ChatR.Hubs
 {
@@ -26,13 +27,11 @@ namespace ChatR.Hubs
 
         public void SaveMessageAsRecord(string jsonObject)
         {
-
-            // Convert BlogSites object to JOSN string format  
             IMessage message = JsonConvert.DeserializeObject<IMessage>(jsonObject);
 
             using (var scope = _scopeFactory.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<DbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<MessageContext>();
 
                 // when we exit the using block,
                 // the IServiceScope will dispose itself 
