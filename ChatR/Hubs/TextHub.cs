@@ -20,23 +20,33 @@ namespace ChatR.Hubs
         }
         public async Task NewMessage(string jsonObj)
         {
+            await SaveMessageAsRecord(jsonObj);
             await Clients.All.SendAsync("messageReceived", jsonObj);
         }
 
-
-
-        public void SaveMessageAsRecord(string jsonObject)
+        public async Task SaveMessageAsRecord(string jsonObject)
         {
-            IMessage message = JsonConvert.DeserializeObject<IMessage>(jsonObject);
-
-            using (var scope = _scopeFactory.CreateScope())
+            try
             {
-                var db = scope.ServiceProvider.GetRequiredService<MessageContext>();
-
-                // when we exit the using block,
-                // the IServiceScope will dispose itself 
-                // and dispose all of the services that it resolved.
+                IMessage message = JsonConvert.DeserializeObject<IMessage>(jsonObject);
+                var msg = new Message(message);
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<MessageContext>();
+                    await PostMessage(msg, db);
+                }
             }
+            catch(Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
+        }
+
+        public async Task PostMessage(Message message, MessageContext context)
+        {
+            context.Messages.Add(message);
+            await context.SaveChangesAsync();
         }
     }
 

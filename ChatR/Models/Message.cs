@@ -9,6 +9,16 @@ namespace ChatR.Models
 
     public class Message : IMessage
     {
+        public Message()
+        {
+
+        }
+        public Message(IMessage message)
+        {
+            Author = message.Author;
+            Content = message.Content;
+            Type = message.Type;
+        }
         [Key]
         public int Key { get; set; }
         public string Author { get; set; }
