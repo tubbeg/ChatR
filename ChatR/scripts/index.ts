@@ -11,11 +11,11 @@ const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
 
-connection.on("messageReceived", (jsonString : string) => {
-    let messages = document.createElement("div");
-    let message = parseMessage(jsonString);
+connection.on("messageReceived", (jsonString) => {
     console.log(jsonString);
-    console.log(message);
+    let messages = document.createElement("div");
+    //let message = parseMessage(jsonString);
+    //console.log(message);
     //divMessages.appendChild(messages);
     //divMessages.scrollTop = divMessages.scrollHeight;
 });
@@ -31,9 +31,8 @@ tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
 btnSend.addEventListener("click", send);
 
 function send() {
-    let message: Message = { author: username.toString(), content: tbMessage.value, type: MessageType.Text }
-    console.log(message)
-    connection.send("newMessage", JSON.stringify(message))
+    let message: Message = { Author: username.toString(), Content: tbMessage.value, Type: MessageType.Text }
+    connection.send("newMessage", message)
         .then(() => tbMessage.value = "");
 }
 

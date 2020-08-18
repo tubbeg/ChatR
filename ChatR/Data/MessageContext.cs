@@ -14,11 +14,15 @@ namespace ChatR.Data
         {
         }
 
-        public DbSet<Message> Messages { get; set; }
+        public DbSet<ChatMessage> Messages { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Message>().ToTable("Message");
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(m => m.User)
+                .WithMany(u => u.Messages)
+                .IsRequired();
         }
     }
 }

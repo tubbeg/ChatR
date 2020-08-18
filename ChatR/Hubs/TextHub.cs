@@ -18,34 +18,49 @@ namespace ChatR.Hubs
         {
             _scopeFactory = scopeFactory;
         }
-        public async Task NewMessage(string jsonObj)
+        //can't use interface as parameter which would be very convenient :\ 
+        public async Task NewMessage(Message message)
         {
-            await SaveMessageAsRecord(jsonObj);
-            await Clients.All.SendAsync("messageReceived", jsonObj);
+            await SaveMessageAsRecord(message);
+            await Clients.All.SendAsync("messageReceived", message);
         }
 
-        public async Task SaveMessageAsRecord(string jsonObject)
+        //Need to set up one-to-many relationship first
+        private async Task SendToUser(string userId, string message)
+        {
+            await Clients.User(userId).SendAsync(message);
+        }
+
+        private async Task SaveMessageAsRecord(IMessage message)
         {
             try
             {
-                IMessage message = JsonConvert.DeserializeObject<IMessage>(jsonObject);
-                var msg = new Message(message);
+                //Cannot deserialize into interface without custom jsonconverter
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<MessageContext>();
-                    await PostMessage(msg, db);
+                    await PostMessage(message, db);
                 }
             }
             catch(Exception exception)
             {
                 Console.WriteLine(exception);
             }
-
         }
 
-        public async Task PostMessage(Message message, MessageContext context)
+
+        private async Task PostMessage(IMessage message, MessageContext context)
         {
-            context.Messages.Add(message);
+            var chatMessage = new ChatMessage(message); 
+            chatMessage.User = context.Users.FirstOrDefault();
+            try
+            {
+                context.Messages.Add(chatMessage);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
             await context.SaveChangesAsync();
         }
     }
