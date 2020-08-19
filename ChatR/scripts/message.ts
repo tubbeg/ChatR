@@ -1,8 +1,8 @@
 ﻿
 export interface Message {
-    author: string;
-    content: string;
-    type: MessageType;
+    Author: string;
+    Content: string;
+    Type: MessageType;
 }
 
 export enum MessageType {
