@@ -33,7 +33,7 @@ namespace ChatR.Hubs
             await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
         }
 
-       
+
         //can't use interface as parameter which would be very convenient :\ 
         public async Task NewMessage(Message message)
         {
@@ -41,10 +41,23 @@ namespace ChatR.Hubs
             await Clients.All.SendAsync("messageReceived", message);
         }
 
-        //Need to set up one-to-many relationship first
-        private async Task SendToUser(string userId, string message)
+        public async Task NewUser(string userId)
         {
-            await Clients.User(userId).SendAsync(message);
+
+
+            var history = await GetHistory();
+
+            await Clients.User(userId).SendAsync("", history);
+        }
+
+        //Need to set up one-to-many relationship first
+        private async Task<List<ChatMessage>> GetHistory()
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<MessageContext>();
+                return await db.Messages.ToListAsync();
+            }
         }
 
         private async Task SaveMessageAsRecord(IMessage message)
@@ -58,7 +71,7 @@ namespace ChatR.Hubs
                     await PostMessage(message, db);
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 Console.WriteLine(exception);
             }
@@ -67,18 +80,23 @@ namespace ChatR.Hubs
 
         private async Task PostMessage(IMessage message, MessageContext context)
         {
-            var chatMessage = new ChatMessage(message); 
+            var chatMessage = new ChatMessage(message);
+            //Need a find method call here
             chatMessage.User = context.Users.FirstOrDefault();
             try
             {
                 context.Messages.Add(chatMessage);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
             await context.SaveChangesAsync();
         }
+
+        public class NotYetImplementedException : Exception
+        {
+        } 
     }
 
 }

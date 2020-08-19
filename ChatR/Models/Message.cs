@@ -20,6 +20,13 @@ namespace ChatR.Models
             Content = message.Content;
             Type = message.Type;
         }
+
+        /*An imperfect solution. It's not good that there are two properties
+         * describing the author/user. On the other hand, I might add more
+         * properties to the User class later on and I also need a FK to
+         * the user entity. This is a design problem. I could simply use
+         * a public username (author) and the real name (username). */
+
         [Key]
         public int Key { get; set; }
         public User User { get; set; }

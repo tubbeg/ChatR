@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatR.Models
 {
-    public class User
+    public class User : IUser
     {
         [Key]
         public int Key { get; set; }
@@ -15,5 +15,10 @@ namespace ChatR.Models
         public string Username { get; set; }
 
         public ICollection<ChatMessage> Messages { get; set; }
+    }
+
+    public interface IUser
+    {
+        public string Username { get; set; }
     }
 }
