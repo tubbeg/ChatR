@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ChatR.Models;
 using ChatR.Data;
+using ChatR.Controllers;
 
 namespace ChatR.Hubs
 {
@@ -43,23 +44,54 @@ namespace ChatR.Hubs
 
         public async Task NewUser(string userId)
         {
-
-
-            var history = await GetHistory();
-
-            await Clients.User(userId).SendAsync("", history);
-        }
-
-        //Need to set up one-to-many relationship first
-        private async Task<List<ChatMessage>> GetHistory()
-        {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<MessageContext>();
-                return await db.Messages.ToListAsync();
+                var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
+                //1. Validate user
+                if (!UserExists(userId, context))
+                {
+                    //2. Add user to list
+                    await AddUser(userId, context);
+                    //3. Add to group, need entity for this
+                    //4. Send group history
+                    var history = await GetHistory(context);
+                    await Clients.User(userId).SendAsync("", history);
+                }
             }
         }
 
+        private async Task AddUser(string userId, MessageContext context)
+        {
+            var user = new User
+            {
+                Username = userId
+            };
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+        }
+
+        private bool UserExists(string userId, MessageContext context)
+        {
+            var user = from a in context.Users
+                        where a.Username == userId
+                        select a;
+            if (user.Count() > 0)
+                return true;
+            return false;
+        }
+
+        private async Task<List<Message>> GetHistory(MessageContext context)
+        {
+            //Is there a better way to do this?
+            var data = await context.Messages.ToListAsync<IMessage>();
+            var history = new List<Message>(); 
+            foreach(var record in data)
+            {
+                var message = new Message(record);
+                history.Add(message);
+            }
+            return history;
+        }
         private async Task SaveMessageAsRecord(IMessage message)
         {
             try

@@ -21,11 +21,21 @@ namespace ChatR.Models
             Type = message.Type;
         }
 
-        /*An imperfect solution. It's not good that there are two properties
+
+        /* Update 2020:08:20. Apparently there are DTO objects
+         * (data transfer objects). These can be used to protect
+         * against overposting attacks. It might not be perfect,
+         * but this is not a bad solution.
+         * See https://go.microsoft.com/fwlink/?linkid=2123754.
+         */
+
+
+        /* An imperfect solution. It's not good that there are two properties
          * describing the author/user. On the other hand, I might add more
          * properties to the User class later on and I also need a FK to
-         * the user entity. This is a design problem. I could simply use
-         * a public username (author) and the real name (username). */
+         * the user entity. Although I could simply use a public username
+         * (author) and the real name (username). This is a design problem.
+         */
 
         [Key]
         public int Key { get; set; }
@@ -36,6 +46,16 @@ namespace ChatR.Models
     }
     public class Message : IMessage
     {
+        public Message()
+        {
+
+        }
+        public Message(IMessage message)
+        {
+            Author = message.Author;
+            Content = message.Content;
+            Type = message.Type;
+        }
         public string Author { get; set; }
         public string Content { get; set; }
         public MessageType Type { get; set; }
