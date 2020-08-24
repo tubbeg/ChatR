@@ -14,12 +14,17 @@ namespace ChatR.Data
         {
         }
 
-        public DbSet<ChatMessage> Messages { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ChatMessage>()
+            //The same user might have different identifiers if signalr
+            //connection is lost. This is only a temporary solution
+            modelBuilder.Entity<User>()
+                .HasIndex(u => new { u.UserIdentifier, u.Username })
+                .IsUnique();
+            modelBuilder.Entity<Message>()
                 .HasOne(m => m.User)
                 .WithMany(u => u.Messages)
                 .IsRequired();
