@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.parseMessage = exports.MessageType = void 0;
 var MessageType;
 (function (MessageType) {
     MessageType[MessageType["Image"] = 0] = "Image";

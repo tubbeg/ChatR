@@ -4,12 +4,14 @@ import { parseMessage, Message, MessageType } from "./message";
 
 const divMessages: HTMLDivElement = document.querySelector("#divMessages");
 const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
+const tbUser: HTMLInputElement = document.querySelector("#tbUser");
 const btnSend: HTMLButtonElement = document.querySelector("#btnSend");
-const username = new Date().getTime();
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
+
+let user = "";
 
 connection.on("messageReceived", (jsonString) => {
     console.log(jsonString);
@@ -20,7 +22,19 @@ connection.on("messageReceived", (jsonString) => {
     //divMessages.scrollTop = divMessages.scrollHeight;
 });
 
-connection.start().catch(err => document.write(err));
+connection.on("ReqHistory", (jsonString) => {
+    console.log(jsonString);
+});
+
+
+
+function NewUser(userId : string) {
+    connection.send("NewUser", userId)
+        .then(() => tbMessage.value = "");
+}
+
+connection.start()
+    .catch(err => document.write(err));
 
 tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -31,8 +45,12 @@ tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
 btnSend.addEventListener("click", send);
 
 function send() {
-    let message: Message = { Author: username.toString(), Content: tbMessage.value, Type: MessageType.Text }
-    connection.send("newMessage", message)
+    let message: Message = { Author: tbUser.value, Content: tbMessage.value, Type: MessageType.Text }
+    if (user == "") {
+        connection.send("NewUser", tbUser.value);
+        user = tbUser.value;
+    }
+    connection.send("NewMessage", message, tbUser.value)
         .then(() => tbMessage.value = "");
 }
 

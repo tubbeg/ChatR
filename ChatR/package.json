@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "debug": "webpack --devtool source-map",
     "build": "webpack --mode=development --watch",
     "release": "webpack --mode=production",
     "publish": "npm run release && dotnet publish -c Release"

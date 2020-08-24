@@ -4,11 +4,12 @@ var signalR = require("@microsoft/signalr");
 var message_1 = require("./message");
 var divMessages = document.querySelector("#divMessages");
 var tbMessage = document.querySelector("#tbMessage");
+var tbUser = document.querySelector("#tbUser");
 var btnSend = document.querySelector("#btnSend");
-var username = new Date().getTime();
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
+var user = "";
 connection.on("messageReceived", function (jsonString) {
     console.log(jsonString);
     var messages = document.createElement("div");
@@ -17,7 +18,15 @@ connection.on("messageReceived", function (jsonString) {
     //divMessages.appendChild(messages);
     //divMessages.scrollTop = divMessages.scrollHeight;
 });
-connection.start().catch(function (err) { return document.write(err); });
+connection.on("ReqHistory", function (jsonString) {
+    console.log(jsonString);
+});
+function NewUser(userId) {
+    connection.send("NewUser", userId)
+        .then(function () { return tbMessage.value = ""; });
+}
+connection.start()
+    .catch(function (err) { return document.write(err); });
 tbMessage.addEventListener("keyup", function (e) {
     if (e.key === "Enter") {
         send();
@@ -25,7 +34,11 @@ tbMessage.addEventListener("keyup", function (e) {
 });
 btnSend.addEventListener("click", send);
 function send() {
-    var message = { Author: username.toString(), Content: tbMessage.value, Type: message_1.MessageType.Text };
-    connection.send("newMessage", message)
+    var message = { Author: tbUser.value, Content: tbMessage.value, Type: message_1.MessageType.Text };
+    if (user == "") {
+        connection.send("NewUser", tbUser.value);
+        user = tbUser.value;
+    }
+    connection.send("NewMessage", message, tbUser.value)
         .then(function () { return tbMessage.value = ""; });
 }

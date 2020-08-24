@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ChatR.Models;
 using ChatR.Data;
 using ChatR.Controllers;
+using System.Security.Claims;
 
 namespace ChatR.Hubs
 {
@@ -36,10 +37,17 @@ namespace ChatR.Hubs
 
 
         //can't use interface as parameter which would be very convenient :\ 
-        public async Task NewMessage(Message message)
+        public async Task NewMessage(Message message, string userId)
         {
-            await SaveMessageAsRecord(message);
-            await Clients.All.SendAsync("messageReceived", message);
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
+                if (UserExists(userId, context))
+                {
+                    await SaveMessageAsRecord(message);
+                    await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", message);
+                }
+            }
         }
 
         public async Task NewUser(string userId)
@@ -51,16 +59,21 @@ namespace ChatR.Hubs
                 if (!UserExists(userId, context))
                 {
                     //2. Add user to list
-                    await AddUser(userId, context);
+                    await AddNewUser(userId, context);
                     //3. Add to group, need entity for this
                     //4. Send group history
                     var history = await GetHistory(context);
-                    await Clients.User(userId).SendAsync("", history);
+                    await Clients.User(Context.UserIdentifier).SendAsync("ReqHistory", history);
                 }
             }
         }
+        /*
+        public Task GetHistory(string user, string message)
+        {
+            return Clients.User(user).SendAsync("GetHistory", message);
+        }*/
 
-        private async Task AddUser(string userId, MessageContext context)
+        private async Task AddNewUser(string userId, MessageContext context)
         {
             var user = new User
             {
@@ -112,6 +125,7 @@ namespace ChatR.Hubs
 
         private async Task PostMessage(IMessage message, MessageContext context)
         {
+
             var chatMessage = new ChatMessage(message);
             //Need a find method call here
             chatMessage.User = context.Users.FirstOrDefault();

@@ -6,12 +6,15 @@ module.exports = {
     entry: "./scripts/index.ts",
     output: {
         path: path.resolve(__dirname, "wwwroot/js"),
-        filename: "[name].[chunkhash].js",
+        //filename: "[name].[chunkhash].js",
+        filename: "[name].js",
         publicPath: "/"
     },
+
     resolve: {
         extensions: [".js", ".ts"]
     },
+    devtool: 'source-map', //remove this line in production
     module: {
         rules: [
             {
