@@ -133,10 +133,6 @@ namespace ChatR.Hubs
             }
             await context.SaveChangesAsync();
         }
-
-        public class NotYetImplementedException : Exception
-        {
-        } 
     }
 
 }
