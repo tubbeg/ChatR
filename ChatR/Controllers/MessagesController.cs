@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ChatR.Data;
 using ChatR.Models;
 
-namespace ChatR
+namespace ChatR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
