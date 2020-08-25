@@ -19,6 +19,9 @@ namespace ChatR.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasIndex(u => new { u.UserIdentifier, u.Username })
+                .IsUnique();
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.User)
                 .WithMany(u => u.Messages)
