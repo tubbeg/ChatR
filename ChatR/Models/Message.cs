@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 namespace ChatR.Models
 { 
  
-    public class ChatMessage : IMessage
+    public class Message : IMessage
     {
-        public ChatMessage()
+        public Message()
         {
 
         }
-        public ChatMessage(IMessage message)
+        public Message(IMessage message)
         {
             Author = message.Author;
             Content = message.Content;
@@ -29,14 +29,6 @@ namespace ChatR.Models
          * See https://go.microsoft.com/fwlink/?linkid=2123754.
          */
 
-
-        /* An imperfect solution. It's not good that there are two properties
-         * describing the author/user. On the other hand, I might add more
-         * properties to the User class later on and I also need a FK to
-         * the user entity. Although I could simply use a public username
-         * (author) and the real name (username). This is a design problem.
-         */
-
         [Key]
         public int Key { get; set; }
         public User User { get; set; }
@@ -44,13 +36,13 @@ namespace ChatR.Models
         public string Content { get; set; }
         public MessageType Type { get; set; }
     }
-    public class Message : IMessage
+    public class MessageDTO : IMessage
     {
-        public Message()
+        public MessageDTO()
         {
 
         }
-        public Message(IMessage message)
+        public MessageDTO(IMessage message)
         {
             Author = message.Author;
             Content = message.Content;

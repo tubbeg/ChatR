@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\ChatMessagesController.cs" />
     <Compile Remove="Controllers\MessagesController.cs" />
+    <Compile Remove="Controllers\UsersController.cs" />
   </ItemGroup>
 
   <ItemGroup>

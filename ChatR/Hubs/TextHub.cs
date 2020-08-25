@@ -37,7 +37,7 @@ namespace ChatR.Hubs
 
 
         //can't use interface as parameter which would be very convenient :\ 
-        public async Task NewMessage(Message message, string userId)
+        public async Task NewMessage(MessageDTO message, string userId)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
@@ -67,12 +67,6 @@ namespace ChatR.Hubs
                 }
             }
         }
-        /*
-        public Task GetHistory(string user, string message)
-        {
-            return Clients.User(user).SendAsync("GetHistory", message);
-        }*/
-
         private async Task AddNewUser(string userId, MessageContext context)
         {
             var user = new User
@@ -93,14 +87,14 @@ namespace ChatR.Hubs
             return false;
         }
 
-        private async Task<List<Message>> GetHistory(MessageContext context)
+        private async Task<List<MessageDTO>> GetHistory(MessageContext context)
         {
             //Is there a better way to do this?
             var data = await context.Messages.ToListAsync<IMessage>();
-            var history = new List<Message>(); 
+            var history = new List<MessageDTO>(); 
             foreach(var record in data)
             {
-                var message = new Message(record);
+                var message = new MessageDTO(record);
                 history.Add(message);
             }
             return history;
@@ -126,7 +120,7 @@ namespace ChatR.Hubs
         private async Task PostMessage(IMessage message, MessageContext context)
         {
 
-            var chatMessage = new ChatMessage(message);
+            var chatMessage = new Message(message);
             //Need a find method call here
             chatMessage.User = context.Users.FirstOrDefault();
             try
