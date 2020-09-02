@@ -27,11 +27,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Messages" asp-action="Index">Chat</a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+    <div class="mt-2 col-md-12">
+        This will have a two-point top margin!
+    </div>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

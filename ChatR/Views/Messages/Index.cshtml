@@ -1,0 +1,46 @@
+﻿@model IEnumerable<ChatR.Models.MessageDTO>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+<div id="MyMessages" class="list-group">
+    @foreach (var item in Model)
+    {
+        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">List group item heading</h5>
+                <small class="text-muted">3 days ago</small>
+            </div>
+            <p class="mb-1">
+                @Html.DisplayFor(modelItem => item.Content)
+            </p>
+            <small class="text-muted">
+                @Html.DisplayFor(modelItem => item.Author)
+            </small>
+        </a>
+    }
+</div>
+
+
+<div class="input-group">
+    <input id="tbMessage" type="text" class="form-control" placeholder="Type here" aria-label="Text input with dropdown button">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Options</button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item" id="btnSend"> Send</button>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+            <div role="separator" class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    window.scrollTo(0, document.body.scrollHeight);
+
+</script>

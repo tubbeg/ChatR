@@ -27,7 +27,6 @@ connection.on("ReqHistory", (jsonString) => {
 });
 
 
-
 function NewUser(userId : string) {
     connection.send("NewUser", userId)
         .then(() => tbMessage.value = "");

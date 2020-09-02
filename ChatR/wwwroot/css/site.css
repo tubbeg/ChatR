@@ -93,3 +93,12 @@ body {
 :-moz-placeholder { /* Firefox 18- */
     color: pink;
 }
+
+.navbar {
+    margin-bottom: 0;
+}
+
+.messages {
+    height: 150px;
+    overflow-y: scroll;
+}
