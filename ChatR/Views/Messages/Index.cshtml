@@ -22,6 +22,7 @@
             </small>
         </a>
     }
+
 </div>
 
 
@@ -39,6 +40,22 @@
     </div>
 </div>
 
+<div id="text-editor-container"></div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
-    window.scrollTo(0, document.body.scrollHeight);
+    $(document).ready(function () {
+        window.scrollTo(0, document.body.scrollHeight);
+        showTextEditor();
+    });
+    function showTextEditor() {
+        let path = "Messages/Get/";
+        // Find the div to put it in
+        var container = document.getElementById("text-editor-container");
+        fetch(path)
+            .then(data => console.log(data));
+
+        //$.get(path, function (data) { console.log(data)});
+    }
 </script>

@@ -52,4 +52,3 @@ function send() {
     connection.send("NewMessage", message, tbUser.value)
         .then(() => tbMessage.value = "");
 }
-
