@@ -5,6 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Messages\Components\**" />
+    <Compile Remove="Views\Shared\Components\**" />
+    <Content Remove="Views\Messages\Components\**" />
+    <Content Remove="Views\Shared\Components\**" />
+    <EmbeddedResource Remove="Views\Messages\Components\**" />
+    <EmbeddedResource Remove="Views\Shared\Components\**" />
+    <None Remove="Views\Messages\Components\**" />
+    <None Remove="Views\Shared\Components\**" />
+    <TypeScriptCompile Remove="Views\Messages\Components\**" />
+    <TypeScriptCompile Remove="Views\Shared\Components\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controllers\ChatMessagesController.cs" />
   </ItemGroup>
 

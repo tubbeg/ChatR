@@ -6,10 +6,10 @@
 
 
 
-<div id="MyMessages" class="list-group pt-lg-5">
+<div id="messages" class="list-group pt-lg-5">
     @foreach (var item in Model)
     {
-        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+        <a class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">List group item heading</h5>
                 <small class="text-muted">3 days ago</small>
@@ -40,22 +40,9 @@
     </div>
 </div>
 
-<div id="text-editor-container"></div>
 
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
-    $(document).ready(function () {
-        window.scrollTo(0, document.body.scrollHeight);
-        showTextEditor();
-    });
-    function showTextEditor() {
-        let path = "Messages/Get/";
-        // Find the div to put it in
-        var container = document.getElementById("text-editor-container");
-        fetch(path)
-            .then(data => console.log(data));
-
-        //$.get(path, function (data) { console.log(data)});
-    }
+    window.scrollTo(0, document.body.scrollHeight);
 </script>
+
+<script src="~/js/main.js"></script>

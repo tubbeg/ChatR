@@ -23,6 +23,10 @@ namespace ChatR.Controllers
             return View();
         }
 
+        public IActionResult IndexVC()
+        {
+            return ViewComponent("Get", new MessageDTO() { Author="",Content="BlaBla"});
+        }
 
         public IActionResult Privacy()
         {

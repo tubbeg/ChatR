@@ -1,6 +1,8 @@
 ﻿import * as signalR from "@microsoft/signalr";
 import { validURL, checkImage } from "./checkString";
-import { parseMessage, Message, MessageType } from "./message";
+import { parseMessage, Message, MessageType, MessageDTO } from "./message";
+//import { LitElement, html, property, customElement } from 'lit-element';
+
 
 const divMessages: HTMLDivElement = document.querySelector("#divMessages");
 const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
@@ -52,3 +54,10 @@ function send() {
     connection.send("NewMessage", message, tbUser.value)
         .then(() => tbMessage.value = "");
 }
+
+
+
+let message = { Author: "MyAuthor", Content: "This class is working!", Type: MessageType.Text }
+let messages = document.getElementById("messages");
+let messageDTO = new MessageDTO(message);
+messages.appendChild(messageDTO.anchor);

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var signalR = require("@microsoft/signalr");
 var message_1 = require("./message");
+//import { LitElement, html, property, customElement } from 'lit-element';
 var divMessages = document.querySelector("#divMessages");
 var tbMessage = document.querySelector("#tbMessage");
 var tbUser = document.querySelector("#tbUser");
@@ -42,3 +43,7 @@ function send() {
     connection.send("NewMessage", message, tbUser.value)
         .then(function () { return tbMessage.value = ""; });
 }
+var message = { Author: "MyAuthor", Content: "This class is working!", Type: message_1.MessageType.Text };
+var messages = document.getElementById("messages");
+var messageDTO = new message_1.MessageDTO(message);
+messages.appendChild(messageDTO.anchor);
