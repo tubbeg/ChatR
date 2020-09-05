@@ -2,15 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var signalR = require("@microsoft/signalr");
 var message_1 = require("./message");
+var new_1 = require("./new");
 //import { LitElement, html, property, customElement } from 'lit-element';
-var divMessages = document.querySelector("#divMessages");
-var tbMessage = document.querySelector("#tbMessage");
-var tbUser = document.querySelector("#tbUser");
-var btnSend = document.querySelector("#btnSend");
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
 var user = "";
+var divMessages = document.querySelector("#divMessages");
+var tbMessage = document.querySelector("#tbMessage");
+var tbUser = document.querySelector("#tbUser");
+var btnSend = document.querySelector("#btnSend");
 connection.on("messageReceived", function (jsonString) {
     console.log(jsonString);
     var messages = document.createElement("div");
@@ -47,3 +48,4 @@ var message = { Author: "MyAuthor", Content: "This class is working!", Type: mes
 var messages = document.getElementById("messages");
 var messageDTO = new message_1.MessageDTO(message);
 messages.appendChild(messageDTO.anchor);
+new_1.element();

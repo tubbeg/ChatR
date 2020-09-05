@@ -12,13 +12,17 @@ module.exports = {
     },
 
     resolve: {
-        extensions: [".js", ".ts"]
+        extensions: ['.tsx', '.ts', '.js']
     },
     devtool: 'source-map', //remove this line in production
     module: {
         rules: [
             {
                 test: /\.ts$/,
+                use: "ts-loader"
+            },
+            {
+                test: /\.tsx$/,
                 use: "ts-loader"
             },
             {
