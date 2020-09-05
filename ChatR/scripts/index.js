@@ -2,19 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var signalR = require("@microsoft/signalr");
 var message_1 = require("./message");
-var new_1 = require("./new");
+var messageUI_1 = require("./messageUI");
 //import { LitElement, html, property, customElement } from 'lit-element';
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
-var user = "";
 var divMessages = document.querySelector("#divMessages");
 var tbMessage = document.querySelector("#tbMessage");
 var tbUser = document.querySelector("#tbUser");
 var btnSend = document.querySelector("#btnSend");
 connection.on("messageReceived", function (jsonString) {
     console.log(jsonString);
-    var messages = document.createElement("div");
+    //let message = new MessageElement(parseMessage(jsonString));
+    //message.render("messages");
     //let message = parseMessage(jsonString);
     //console.log(message);
     //divMessages.appendChild(messages);
@@ -44,8 +44,14 @@ function send() {
     connection.send("NewMessage", message, tbUser.value)
         .then(function () { return tbMessage.value = ""; });
 }
+var user = "myId";
 var message = { Author: "MyAuthor", Content: "This class is working!", Type: message_1.MessageType.Text };
+var element = new messageUI_1.MessageElement(message);
+var anchor = document.createElement("a");
 var messages = document.getElementById("messages");
-var messageDTO = new message_1.MessageDTO(message);
+messages.appendChild(anchor);
+element.render(anchor);
+/*let messages = document.getElementById("messages");
+let messageDTO = new MessageDTO(message);
 messages.appendChild(messageDTO.anchor);
-new_1.element();
+*/

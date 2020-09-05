@@ -1,7 +1,7 @@
 ﻿import * as signalR from "@microsoft/signalr";
 import { validURL, checkImage } from "./checkString";
-import { parseMessage, Message, MessageType, MessageDTO } from "./message";
-import { element } from "./new";
+import { parseMessage, Message, MessageType } from "./message";
+import { MessageElement } from "./messageUI";
 
 //import { LitElement, html, property, customElement } from 'lit-element';
 
@@ -9,7 +9,6 @@ const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
 
-let user = "";
 const divMessages: HTMLDivElement = document.querySelector("#divMessages");
 const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
 const tbUser: HTMLInputElement = document.querySelector("#tbUser");
@@ -18,7 +17,8 @@ const btnSend: HTMLButtonElement = document.querySelector("#btnSend");
 
 connection.on("messageReceived", (jsonString) => {
     console.log(jsonString);
-    let messages = document.createElement("div");
+    //let message = new MessageElement(parseMessage(jsonString));
+    //message.render("messages");
     //let message = parseMessage(jsonString);
     //console.log(message);
     //divMessages.appendChild(messages);
@@ -58,10 +58,20 @@ function send() {
 
 
 
+let user = "myId";
 
 let message = { Author: "MyAuthor", Content: "This class is working!", Type: MessageType.Text }
+let element = new MessageElement(message);
+let anchor: HTMLAnchorElement = document.createElement("a");
 let messages = document.getElementById("messages");
+messages.appendChild(anchor);
+element.render(anchor);
+
+
+/*let messages = document.getElementById("messages");
 let messageDTO = new MessageDTO(message);
 messages.appendChild(messageDTO.anchor);
+*/
 
-element();
+
+

@@ -63,7 +63,11 @@ namespace ChatR.Hubs
                     //3. Add to group, need entity for this
                     //4. Send group history
                     var history = await GetHistory(context);
-                    await Clients.User(Context.UserIdentifier).SendAsync("ReqHistory", history);
+                    //await Clients.User(Context.UserIdentifier).SendAsync("ReqHistory", history);
+                    foreach(var record in history)
+                    {
+                        await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", record);
+                    }
                 }
             }
         }

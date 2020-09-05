@@ -31,17 +31,5 @@ namespace ChatR.Controllers
             }
             return View(messagesDTO);
         }
-
-         public async Task<IActionResult> Get()
-        {
-            var messagesDTO = new List<MessageDTO>();
-            var messages = await _context.Messages.ToListAsync();
-            foreach (var message in messages)
-            {
-                var newMessage = new MessageDTO(message);
-                messagesDTO.Add(newMessage);
-            }
-            return ViewComponent("NewMessage", messagesDTO);
-        }
     }
 }

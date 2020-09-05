@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\ChatMessagesController.cs" />
+    <Compile Remove="Controllers\NewMessage.cs" />
   </ItemGroup>
 
   <ItemGroup>
