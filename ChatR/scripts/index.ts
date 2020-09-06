@@ -1,7 +1,7 @@
 ﻿import * as signalR from "@microsoft/signalr";
 import { validURL, checkImage } from "./checkString";
 import { parseMessage, Message, MessageType } from "./message";
-import { MessageElement } from "./messageUI";
+import { MessageList } from "./messageUI";
 
 //import { LitElement, html, property, customElement } from 'lit-element';
 
@@ -60,18 +60,18 @@ function send() {
 
 let user = "myId";
 
-let message = { Author: "MyAuthor", Content: "This class is working!", Type: MessageType.Text }
-let element = new MessageElement(message);
-let anchor: HTMLAnchorElement = document.createElement("a");
+//let message = { Author: "MyAuthor", Content: "This class is working!", Type: MessageType.Text }
+//let element = new MessageElement(message);
 let messages = document.getElementById("messages");
-messages.appendChild(anchor);
-element.render(anchor);
-
-
-/*let messages = document.getElementById("messages");
-let messageDTO = new MessageDTO(message);
-messages.appendChild(messageDTO.anchor);
-*/
-
+let messageList = new MessageList(messages);
+let messageData = fetch("/api/messagehistory")
+    .then(response => response.json())
+    .then((result) => {
+        console.log(result);
+        result.forEach(record => {
+            messageList.appendMessage(record);
+        });
+    })
+    .then(() => messageList.render());
 
 

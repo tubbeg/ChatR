@@ -45,13 +45,16 @@ function send() {
         .then(function () { return tbMessage.value = ""; });
 }
 var user = "myId";
-var message = { Author: "MyAuthor", Content: "This class is working!", Type: message_1.MessageType.Text };
-var element = new messageUI_1.MessageElement(message);
-var anchor = document.createElement("a");
+//let message = { Author: "MyAuthor", Content: "This class is working!", Type: MessageType.Text }
+//let element = new MessageElement(message);
 var messages = document.getElementById("messages");
-messages.appendChild(anchor);
-element.render(anchor);
-/*let messages = document.getElementById("messages");
-let messageDTO = new MessageDTO(message);
-messages.appendChild(messageDTO.anchor);
-*/
+var messageList = new messageUI_1.MessageList(messages);
+var messageData = fetch("/api/messagehistory")
+    .then(function (response) { return response.json(); })
+    .then(function (result) {
+    console.log(result);
+    result.forEach(function (record) {
+        messageList.appendMessage(record);
+    });
+})
+    .then(function () { return messageList.render(); });
