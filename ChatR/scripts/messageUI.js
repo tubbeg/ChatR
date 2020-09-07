@@ -6,17 +6,24 @@ var ReactDOM = require("react-dom");
 var MessageList = (function () {
     function MessageList(root) {
         this.root = root;
+        this.history = new Array();
     }
-    MessageList.prototype.renderList = function (data) {
-        return data.map(function (record) { return React.createElement("a", { className: "list-group-item list-group-item-action flex-column align-items-start" },
+    MessageList.prototype.appendMessage = function (message) {
+        this.history.push(message);
+    };
+    MessageList.prototype.setList = function (messageList) {
+        this.history = messageList;
+    };
+    MessageList.prototype.renderList = function () {
+        return this.history.map(function (record) { return React.createElement("a", { className: "list-group-item list-group-item-action flex-column align-items-start" },
             React.createElement("div", { className: "d-flex w-100 justify-content-between" },
                 React.createElement("h5", { className: "mb-1" }, "List group item heading"),
                 React.createElement("small", { className: "text-muted" }, "3 days ago")),
             React.createElement("p", { className: "mb-1" }, record.author),
             React.createElement("small", { className: "text-muted" }, record.content)); });
     };
-    MessageList.prototype.render = function (data) {
-        var listItems = this.renderList(data);
+    MessageList.prototype.render = function () {
+        var listItems = this.renderList();
         ReactDOM.render(listItems, this.root);
     };
     return MessageList;

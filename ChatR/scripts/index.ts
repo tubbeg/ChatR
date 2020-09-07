@@ -39,7 +39,8 @@ fetch("/api/history")
         console.log(result[0].author); // <=== HITTADE FELET, ska vara små bokstav av nån jävla anledning?
         //let message2 = new MessageDTO(result[0]);
         //let data2 = [message2, message2]*/
-        messageList.render(result);
+        messageList.setList(result);
+        messageList.render();
         //messageList.render(data2);
     });
     //.then((result : Message[]) => messageList.render(result));
@@ -60,8 +61,8 @@ function main() {
     connection.on("messageReceived", (jsonString) => {
         console.log(jsonString);
         let message = parseMessage(jsonString);
-        //messageList.appendMessage(message);
-        //messageList.render();
+        messageList.appendMessage(message);
+        messageList.render();
     });
 
     connection.on("ReqHistory", (jsonString) => {

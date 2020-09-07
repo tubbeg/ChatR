@@ -13,7 +13,8 @@ var messageList = new messageUI_1.MessageList(messages);
 fetch("/api/history")
     .then(function (response) { return response.json(); })
     .then(function (result) {
-    messageList.render(result);
+    messageList.setList(result);
+    messageList.render();
 });
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
@@ -26,6 +27,8 @@ function main() {
     connection.on("messageReceived", function (jsonString) {
         console.log(jsonString);
         var message = message_1.parseMessage(jsonString);
+        messageList.appendMessage(message);
+        messageList.render();
     });
     connection.on("ReqHistory", function (jsonString) {
         console.log(jsonString);
