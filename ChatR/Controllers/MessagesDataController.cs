@@ -28,6 +28,23 @@ namespace ChatR.Controllers
             return await _context.Messages.ToListAsync();
         }
 
+
+        // GET: api/MessageHistory
+        [HttpGet]
+        [Route("~/api/history")]
+        //[Route("/getHistory")]
+        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetHistory()
+        {
+            var messagesDTO = new List<MessageDTO>();
+            var messages = await _context.Messages.ToListAsync();
+            foreach (var message in messages)
+            {
+                var newMessage = new MessageDTO(message);
+                messagesDTO.Add(newMessage);
+            }
+            return messagesDTO;
+        }
+
         // GET: api/MessagesData/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Message>> GetMessage(int id)
