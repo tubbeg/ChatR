@@ -1,8 +1,8 @@
 ﻿
 export interface Message {
-    Author: string;
-    Content: string;
-    Type: MessageType;
+    author: string;
+    content: string;
+    type: MessageType;
 }
 
 

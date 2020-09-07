@@ -26,7 +26,7 @@ fetch("/api/history")
             console.log(message.Author);
             console.log(message.Content);
             messageList.appendMessage(message);
-        });*/
+        });
         let message = { Author: "MyAuthor", Content: "This class is working!", Type: MessageType.Text }
         //let message = { Author: result[0].Author.toString(), Content: result[0].Content.toString(), Type: MessageType.Text }
         let data = [message, message];
@@ -38,8 +38,8 @@ fetch("/api/history")
         console.log(Object.keys(result[0])[0])
         console.log(result[0].author); // <=== HITTADE FELET, ska vara små bokstav av nån jävla anledning?
         //let message2 = new MessageDTO(result[0]);
-        //let data2 = [message2, message2]
-        messageList.render(data);
+        //let data2 = [message2, message2]*/
+        messageList.render(result);
         //messageList.render(data2);
     });
     //.then((result : Message[]) => messageList.render(result));
@@ -86,7 +86,7 @@ function main() {
     btnSend.addEventListener("click", send);
 
     function send() {
-        let message: Message = { Author: user, Content: tbMessage.value, Type: MessageType.Text }
+        let message: Message = { author: user, content: tbMessage.value, type: MessageType.Text }
         if (user == "") {
             connection.send("NewUser", tbUser.value);
             user = tbUser.value;

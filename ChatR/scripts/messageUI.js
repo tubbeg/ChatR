@@ -12,8 +12,8 @@ var MessageList = (function () {
             React.createElement("div", { className: "d-flex w-100 justify-content-between" },
                 React.createElement("h5", { className: "mb-1" }, "List group item heading"),
                 React.createElement("small", { className: "text-muted" }, "3 days ago")),
-            React.createElement("p", { className: "mb-1" }, record.Author),
-            React.createElement("small", { className: "text-muted" }, record.Content)); });
+            React.createElement("p", { className: "mb-1" }, record.author),
+            React.createElement("small", { className: "text-muted" }, record.content)); });
     };
     MessageList.prototype.render = function (data) {
         var listItems = this.renderList(data);

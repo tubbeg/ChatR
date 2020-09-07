@@ -13,16 +13,7 @@ var messageList = new messageUI_1.MessageList(messages);
 fetch("/api/history")
     .then(function (response) { return response.json(); })
     .then(function (result) {
-    var message = { Author: "MyAuthor", Content: "This class is working!", Type: message_1.MessageType.Text };
-    var data = [message, message];
-    console.log(result[0]);
-    console.log(result[0][Object.keys(result[0])[0]]);
-    console.log("keys: ");
-    console.log(Object.keys(result[0]));
-    console.log("key parameter: ");
-    console.log(Object.keys(result[0])[0]);
-    console.log(result[0].author);
-    messageList.render(data);
+    messageList.render(result);
 });
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
@@ -52,7 +43,7 @@ function main() {
     });
     btnSend.addEventListener("click", send);
     function send() {
-        var message = { Author: user, Content: tbMessage.value, Type: message_1.MessageType.Text };
+        var message = { author: user, content: tbMessage.value, type: message_1.MessageType.Text };
         if (user == "") {
             connection.send("NewUser", tbUser.value);
             user = tbUser.value;
