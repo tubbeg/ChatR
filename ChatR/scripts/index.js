@@ -51,7 +51,7 @@ function main() {
             connection.send("NewUser", tbUser.value);
             user = tbUser.value;
         }
-        connection.send("NewMessage", message, tbUser.value)
+        connection.send("NewMessage", message, user)
             .then(function () { return tbMessage.value = ""; });
     }
 }

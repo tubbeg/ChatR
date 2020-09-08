@@ -19,6 +19,7 @@ namespace ChatR.Models
             Author = message.Author;
             Content = message.Content;
             Type = message.Type;
+            Date = message.Date;
         }
 
 
@@ -35,6 +36,7 @@ namespace ChatR.Models
         public string Author { get; set; }
         public string Content { get; set; }
         public MessageType Type { get; set; }
+        public DateTime Date { get; set; }
     }
     public class MessageDTO : IMessage
     {
@@ -47,10 +49,12 @@ namespace ChatR.Models
             Author = message.Author;
             Content = message.Content;
             Type = message.Type;
+            Date = message.Date;
         }
         public string Author { get; set; }
         public string Content { get; set; }
         public MessageType Type { get; set; }
+        public DateTime Date { get; set; }
     }
 
     public interface IMessage
@@ -58,6 +62,7 @@ namespace ChatR.Models
         public string Author { get; set; }
         public string Content { get; set; }
         public MessageType Type { get; set; }
+        public DateTime Date { get; set; }
     }
 
     public enum MessageType

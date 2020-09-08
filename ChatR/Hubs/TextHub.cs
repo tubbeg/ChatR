@@ -44,6 +44,7 @@ namespace ChatR.Hubs
                 var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
                 if (UserExists(userId, context))
                 {
+                    message.Date = DateTime.UtcNow;
                     await SaveMessageAsRecord(message);
                     await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", message);
                 }
@@ -61,13 +62,9 @@ namespace ChatR.Hubs
                     //2. Add user to list
                     await AddNewUser(userId, context);
                     //3. Add to group, need entity for this
-                    //4. Send group history
-                    var history = await GetHistory(context);
-                    //await Clients.User(Context.UserIdentifier).SendAsync("ReqHistory", history);
-                    foreach(var record in history)
-                    {
-                        await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", record);
-                    }
+                    //4. Send group history, this is now handled on the client
+                    //The message history also needs to be filtered depending on the group
+                    
                 }
             }
         }
@@ -91,18 +88,6 @@ namespace ChatR.Hubs
             return false;
         }
 
-        private async Task<List<MessageDTO>> GetHistory(MessageContext context)
-        {
-            //Is there a better way to do this?
-            var data = await context.Messages.ToListAsync<IMessage>();
-            var history = new List<MessageDTO>(); 
-            foreach(var record in data)
-            {
-                var message = new MessageDTO(record);
-                history.Add(message);
-            }
-            return history;
-        }
         private async Task SaveMessageAsRecord(IMessage message)
         {
             try
