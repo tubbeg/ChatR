@@ -3,55 +3,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var signalR = require("@microsoft/signalr");
 var message_1 = require("./message");
 var messageUI_1 = require("./messageUI");
-var $ = require("jquery");
-var divMessages = document.querySelector("#divMessages");
 var tbMessage = document.querySelector("#tbMessage");
 var tbUser = document.querySelector("#tbUser");
 var btnSend = document.querySelector("#btnSend");
 var messages = document.querySelector("#messages");
 var messageList = new messageUI_1.MessageList(messages);
-fetch("/api/history")
-    .then(function (response) { return response.json(); })
-    .then(function (result) {
-    messageList.setList(result);
-    messageList.render();
-});
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
-$(document).ready(function () {
-    main();
+console.log(fetch("/api/history")
+    .then(function (response) { return response.json(); })
+    .then(function (result) { return messageList.setList(result); })
+    .then(function () { return messageList.render(); })
+    .then(function () { return window.scrollTo(0, document.body.scrollHeight); }));
+var user = "";
+connection.on("messageReceived", function (message) {
+    console.log(message);
+    messageList.appendMessage(message);
+    messageList.render();
+    window.scrollTo(0, document.body.scrollHeight);
 });
-function main() {
-    var user = "myId";
-    connection.on("messageReceived", function (jsonString) {
-        console.log(jsonString);
-        var message = message_1.parseMessage(jsonString);
-        messageList.appendMessage(message);
-        messageList.render();
-    });
-    connection.on("ReqHistory", function (jsonString) {
-        console.log(jsonString);
-    });
-    function NewUser(userId) {
-        connection.send("NewUser", userId)
-            .then(function () { return tbMessage.value = ""; });
+connection.on("ReqHistory", function (jsonString) {
+    console.log(jsonString);
+});
+connection.start()
+    .catch(function (err) { return document.write(err); });
+tbMessage.addEventListener("keyup", function (e) {
+    if (e.key === "Enter") {
+        send();
     }
-    connection.start()
-        .catch(function (err) { return document.write(err); });
-    tbMessage.addEventListener("keyup", function (e) {
-        if (e.key === "Enter") {
-            send();
-        }
-    });
-    btnSend.addEventListener("click", send);
-    function send() {
-        var message = { author: user, content: tbMessage.value, type: message_1.MessageType.Text };
-        if (user == "") {
-            connection.send("NewUser", tbUser.value);
-            user = tbUser.value;
-        }
-        connection.send("NewMessage", message, user)
-            .then(function () { return tbMessage.value = ""; });
-    }
+});
+btnSend.addEventListener("click", send);
+function send() {
+    var message = {
+        author: tbUser.value,
+        content: tbMessage.value,
+        type: message_1.MessageType.Text,
+        date: null
+    };
+    connection.send("AddMessage", message, tbUser.value)
+        .then(function () { return tbMessage.value = ""; });
 }
