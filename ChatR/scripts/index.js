@@ -11,6 +11,7 @@ var messageList = new messageUI_1.MessageList(messages);
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
+console.log("trying to find connection");
 console.log(fetch("/api/history")
     .then(function (response) { return response.json(); })
     .then(function (result) { return messageList.setList(result); })
@@ -27,13 +28,13 @@ connection.on("ReqHistory", function (jsonString) {
     console.log(jsonString);
 });
 connection.start()
+    .then(function () { console.log("connection started"); })
     .catch(function (err) { return document.write(err); });
 tbMessage.addEventListener("keyup", function (e) {
     if (e.key === "Enter") {
         send();
     }
 });
-btnSend.addEventListener("click", send);
 function send() {
     var message = {
         author: tbUser.value,
@@ -41,6 +42,13 @@ function send() {
         type: message_1.MessageType.Text,
         date: null
     };
-    connection.send("AddMessage", message, tbUser.value)
-        .then(function () { return tbMessage.value = ""; });
+    connection.send("AddToGroup", tbUser.value)
+        .then(function () { return tbMessage.value = ""; })
+        .catch(function (err) { console.log(err); });
+    console.log("sending information: ", message);
+    console.log("with user: " + tbUser.value);
+    connection.send("SendNewMessage", message, tbUser.value)
+        .then(function () { return tbMessage.value = ""; })
+        .catch(function (err) { console.log(err); });
 }
+btnSend.addEventListener("click", send);
