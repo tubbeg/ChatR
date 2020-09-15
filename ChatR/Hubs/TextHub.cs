@@ -37,16 +37,15 @@ namespace ChatR.Hubs
 
 
         //can't use interface as parameter which would be very convenient :\ 
-        public async Task AddMessage(MessageDTO message, string userId)
+        public async Task AddMessage(MessageDTO message)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
                 //if (UserExists(userId, context))
                 //{
-                    message.Date = DateTime.UtcNow;
                     await SaveMessageAsRecord(message);
-                    await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", message);
+                    await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", message, DateTime.UtcNow);
                // }
             }
         }

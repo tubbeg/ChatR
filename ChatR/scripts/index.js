@@ -18,8 +18,11 @@ console.log(fetch("/api/history")
     .then(function () { return messageList.render(); })
     .then(function () { return window.scrollTo(0, document.body.scrollHeight); }));
 var user = "";
-connection.on("messageReceived", function (message) {
+connection.on("messageReceived", function (message, date) {
     console.log(message);
+    console.log(date);
+    var newDate = new Date(date);
+    console.log(date);
     messageList.appendMessage(message);
     messageList.render();
     window.scrollTo(0, document.body.scrollHeight);
@@ -40,14 +43,10 @@ function send() {
         author: tbUser.value,
         content: tbMessage.value,
         type: message_1.MessageType.Text,
-        date: null
     };
-    connection.send("AddToGroup", tbUser.value)
-        .then(function () { return tbMessage.value = ""; })
-        .catch(function (err) { console.log(err); });
     console.log("sending information: ", message);
     console.log("with user: " + tbUser.value);
-    connection.send("SendNewMessage", message, tbUser.value)
+    connection.send("AddMessage", message)
         .then(function () { return tbMessage.value = ""; })
         .catch(function (err) { console.log(err); });
 }

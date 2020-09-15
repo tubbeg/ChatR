@@ -23,7 +23,7 @@ export class MessageList {
         return this.history.map((record: Message) => <a className="list-group-item list-group-item-action flex-column align-items-start">
             <div className="d-flex w-100 justify-content-between">
                 <h5 className="mb-1">List group item heading</h5>
-                <small className="text-muted">{record.date}</small>
+                <small className="text-muted">3 days ago</small>
             </div>
             <p className="mb-1">{record.author}</p>
             <small className="text-muted">{record.content}</small>

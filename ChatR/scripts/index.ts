@@ -28,8 +28,11 @@ console.log(fetch("/api/history")
 let user = "";
 
 
-connection.on("messageReceived", (message : Message) => {
+connection.on("messageReceived", (message : Message, date) => {
     console.log(message);
+    console.log(date);
+    let newDate = new Date(date);
+    console.log(date);
     messageList.appendMessage(message);
     messageList.render();
     window.scrollTo(0, document.body.scrollHeight);
@@ -55,19 +58,20 @@ function send() {
         author: tbUser.value,
         content: tbMessage.value,
         type: MessageType.Text,
-        date: null
     }
+
+
     /*if (user == "") {
         connection.send("NewUser", tbUser.value);
         user = tbUser.value;
     }*/
 
-    connection.send("AddToGroup", tbUser.value)
+    /*connection.send("AddToGroup", tbUser.value)
         .then(() => tbMessage.value = "")
-        .catch((err) => { console.log(err) });
+        .catch((err) => { console.log(err) });*/
     console.log("sending information: ", message);
     console.log("with user: " + tbUser.value);
-    connection.send("SendNewMessage", message, tbUser.value)
+    connection.send("AddMessage", message)
         .then(() => tbMessage.value = "")
         .catch((err) => { console.log(err)});
 }
