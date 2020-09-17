@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var signalR = require("@microsoft/signalr");
+var checkString_1 = require("./checkString");
 var message_1 = require("./message");
 var messageUI_1 = require("./messageUI");
 var moment = require("moment");
@@ -12,7 +13,6 @@ var messageList = new messageUI_1.MessageList(messages);
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
-console.log("trying to find connection");
 console.log(fetch("/api/history")
     .then(function (response) { return response.json(); })
     .then(function (result) { return messageList.setList(result); })
@@ -28,9 +28,6 @@ connection.on("messageReceived", function (message, date) {
     messageList.render();
     window.scrollTo(0, document.body.scrollHeight);
 });
-connection.on("ReqHistory", function (jsonString) {
-    console.log(jsonString);
-});
 connection.start()
     .then(function () { console.log("connection started"); })
     .catch(function (err) { return document.write(err); });
@@ -39,15 +36,15 @@ tbMessage.addEventListener("keyup", function (e) {
         send();
     }
 });
-var date = new Date();
-var otherDate = date.toISOString();
-var newDate = moment(otherDate);
 function send() {
+    var contentType = message_1.MessageType.Text;
+    if (checkString_1.isImage(tbMessage.value))
+        contentType = message_1.MessageType.Image;
     var date = new Date();
     var message = {
         author: tbUser.value,
         content: tbMessage.value,
-        type: message_1.MessageType.Text,
+        type: contentType,
         date: moment(date)
     };
     connection.send("AddMessage", message)

@@ -1,5 +1,5 @@
 ﻿import * as signalR from "@microsoft/signalr";
-import { validURL, checkImage } from "./checkString";
+import { validURL, isImage } from "./checkString";
 import { parseMessage, Message, MessageType } from "./message";
 import { MessageList } from "./messageUI";
 import * as $ from "jquery";
@@ -15,9 +15,6 @@ let messageList = new MessageList(messages);
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
-
-
-console.log("trying to find connection")
 
 console.log(fetch("/api/history")
     .then(response => response.json())
@@ -38,10 +35,6 @@ connection.on("messageReceived", (message : Message, date : string) => {
     window.scrollTo(0, document.body.scrollHeight);
 });
 
-connection.on("ReqHistory", (jsonString) => {
-    console.log(jsonString);
-});
-
 connection.start()
     .then(() => { console.log("connection started");})
     .catch(err => document.write(err));
@@ -52,18 +45,15 @@ tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
     }
 });
 
-let date = new Date();
-
-let otherDate = date.toISOString();
-let newDate = moment(otherDate);
-
-
 function send() {
+    let contentType = MessageType.Text;
+    if (isImage(tbMessage.value))
+        contentType = MessageType.Image;
     let date = new Date();
     let message: Message = {
         author: tbUser.value,
         content: tbMessage.value,
-        type: MessageType.Text,
+        type: contentType,
         date: moment(date)
     }
     connection.send("AddMessage", message)

@@ -1,7 +1,7 @@
 ﻿
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Message } from "./message";
+import { Message, MessageType } from "./message";
 
 export class MessageList {
     history : Message[];
@@ -19,14 +19,23 @@ export class MessageList {
         this.history = messageList;
     }
 
+    contentType(record: Message) : JSX.Element {
+        if (record.type == MessageType.Text)
+            return <small className="text-muted">{record.content}</small>;
+        else {
+            let element = <img className="img-fluid" src={record.content}></img>
+            return element;
+        }
+    }
+
     renderList() {
         return this.history.map((record: Message) => <a className="list-group-item list-group-item-action flex-column align-items-start">
             <div className="d-flex w-100 justify-content-between">
                 <h5 className="mb-1">List group item heading</h5>
-                <small className="text-muted">3 days ago</small>
+                <small className="text-muted">{record.date}</small>
             </div>
             <p className="mb-1">{record.author}</p>
-            <small className="text-muted">{record.content}</small>
+            {this.contentType(record)}
         </a>);
     }
 

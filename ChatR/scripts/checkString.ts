@@ -9,6 +9,6 @@
 }
 
 
-export function checkImage(url) : boolean {
+export function isImage(url) : boolean {
     return (url.match(/\.(jpeg|jpg|gif|png)$/) != null);
 }

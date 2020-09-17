@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkImage = exports.validURL = void 0;
+exports.isImage = exports.validURL = void 0;
 function validURL(str) {
     var pattern = new RegExp('^(https?:\\/\\/)?' +
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
@@ -11,7 +11,7 @@ function validURL(str) {
     return !!pattern.test(str);
 }
 exports.validURL = validURL;
-function checkImage(url) {
+function isImage(url) {
     return (url.match(/\.(jpeg|jpg|gif|png)$/) != null);
 }
-exports.checkImage = checkImage;
+exports.isImage = isImage;
