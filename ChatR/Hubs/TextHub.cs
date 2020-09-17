@@ -41,9 +41,13 @@ namespace ChatR.Hubs
         {
             using (var scope = _scopeFactory.CreateScope())
             {
+                //eller så här
+                var data = DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
                 var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
                 //if (UserExists(userId, context))
                 //{
+                // message.Date = DateTime.UtcNow.ToString();  //<< gör så här
+                message.Date = DateTime.UtcNow;
                     await SaveMessageAsRecord(message);
                     await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", message, DateTime.UtcNow);
                // }

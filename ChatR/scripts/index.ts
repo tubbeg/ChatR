@@ -3,7 +3,7 @@ import { validURL, checkImage } from "./checkString";
 import { parseMessage, Message, MessageType } from "./message";
 import { MessageList } from "./messageUI";
 import * as $ from "jquery";
-
+import * as moment from "moment"
 
 const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
 const tbUser: HTMLInputElement = document.querySelector("#tbUser");
@@ -28,7 +28,7 @@ console.log(fetch("/api/history")
 let user = "";
 
 
-connection.on("messageReceived", (message : Message, date) => {
+connection.on("messageReceived", (message : Message, date : string) => {
     console.log(message);
     console.log(date);
     let newDate = new Date(date);
@@ -52,25 +52,20 @@ tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
     }
 });
 
+let date = new Date();
+
+let otherDate = date.toISOString();
+let newDate = moment(otherDate);
+
 
 function send() {
+    let date = new Date();
     let message: Message = {
         author: tbUser.value,
         content: tbMessage.value,
         type: MessageType.Text,
+        date: moment(date)
     }
-
-
-    /*if (user == "") {
-        connection.send("NewUser", tbUser.value);
-        user = tbUser.value;
-    }*/
-
-    /*connection.send("AddToGroup", tbUser.value)
-        .then(() => tbMessage.value = "")
-        .catch((err) => { console.log(err) });*/
-    console.log("sending information: ", message);
-    console.log("with user: " + tbUser.value);
     connection.send("AddMessage", message)
         .then(() => tbMessage.value = "")
         .catch((err) => { console.log(err)});

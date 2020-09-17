@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var signalR = require("@microsoft/signalr");
 var message_1 = require("./message");
 var messageUI_1 = require("./messageUI");
+var moment = require("moment");
 var tbMessage = document.querySelector("#tbMessage");
 var tbUser = document.querySelector("#tbUser");
 var btnSend = document.querySelector("#btnSend");
@@ -38,14 +39,17 @@ tbMessage.addEventListener("keyup", function (e) {
         send();
     }
 });
+var date = new Date();
+var otherDate = date.toISOString();
+var newDate = moment(otherDate);
 function send() {
+    var date = new Date();
     var message = {
         author: tbUser.value,
         content: tbMessage.value,
         type: message_1.MessageType.Text,
+        date: moment(date)
     };
-    console.log("sending information: ", message);
-    console.log("with user: " + tbUser.value);
     connection.send("AddMessage", message)
         .then(function () { return tbMessage.value = ""; })
         .catch(function (err) { console.log(err); });
