@@ -10,6 +10,7 @@ namespace ChatR.Models
     {
         [Key]
         public int Key { get; set; }
+        public string Name { get; set; }
         public IEnumerable<Message> Messages { get; set; }
     }
 }

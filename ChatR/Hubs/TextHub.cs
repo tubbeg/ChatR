@@ -10,6 +10,8 @@ using ChatR.Models;
 using ChatR.Data;
 using ChatR.Controllers;
 using System.Security.Claims;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace ChatR.Hubs
 {
@@ -21,109 +23,60 @@ namespace ChatR.Hubs
             _scopeFactory = scopeFactory;
         }
 
-        public async Task AddToGroup(string groupName)
+        private async Task AddToGroup(string groupName)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has joined the group {groupName}.");
         }
 
-        public async Task RemoveFromGroup(string groupName)
+        private async Task RemoveFromGroup(string groupName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
         }
 
 
         //can't use interface as parameter which would be very convenient :\ 
-        public async Task AddMessage(MessageDTO message)
+        public async Task AddMessage(MessageDTO message, string groupName)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                //eller så här
-                var data = DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-                var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
-                //if (UserExists(userId, context))
-                //{
-                // message.Date = DateTime.UtcNow.ToString();  //<< gör så här
                 message.Date = DateTime.UtcNow;
-                    await SaveMessageAsRecord(message);
-                    await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", message, DateTime.UtcNow);
-               // }
-            }
-        }
-        /*
-        public async Task NewUser(string userId)
-        {
-            using (var scope = _scopeFactory.CreateScope())
-            {
                 var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
-                //1. Validate user
-                if (!UserExists(userId, context))
-                {
-                    //2. Add user to list
-                    await AddNewUser(userId, context);
-                    //3. Add to group, need entity for this
-                    //4. Send group history, this is now handled on the client
-                    //The message history also needs to be filtered depending on the group
-                    
-                }
-            }
-        }
-        private async Task AddNewUser(string userId, MessageContext context)
-        {
-            var user = new User
-            {
-                Username = userId
-            };
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
-        }
-
-        private bool UserExists(string userId, MessageContext context)
-        {
-            var user = from a in context.Users
-                        where a.Username == userId
-                        select a;
-            if (user.Count() > 0)
-                return true;
-            return false;
-        }*/
-
-        private async Task SaveMessageAsRecord(IMessage message)
-        {
-            try
-            {
                 //Cannot deserialize into interface without custom jsonconverter
-                using (var scope = _scopeFactory.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<MessageContext>();
-                    await PostMessage(message, db);
-                }
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
+                await PostMessage(message, groupName, context);
+                await Clients.User(Context.UserIdentifier).SendAsync("messageReceived", message, DateTime.UtcNow);
             }
         }
-
-
-        private async Task PostMessage(IMessage message, MessageContext context)
+        private async Task PostMessage(IMessage message, string groupName, MessageContext context)
         {
 
             var chatMessage = new Message(message);
-            //Need a find method call here
-            chatMessage.User = context.Users.FirstOrDefault();
             try
             {
+                chatMessage.Group = FindGroup(groupName, context);
                 context.Messages.Add(chatMessage);
+                await AddToGroup(groupName);
+                await context.SaveChangesAsync();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-            await context.SaveChangesAsync();
+        }
+
+        private Group FindGroup(string groupName, MessageContext context)
+        {
+            //Need a find method call here
+            var listOfGroups = from g in context.Groups
+                         where g.Name == groupName
+                         select g;
+            if (listOfGroups.Count() < 1)
+                throw new NoGroupFoundException();
+            return listOfGroups.First();
+        }
+
+        private class NoGroupFoundException : Exception
+        {
+
         }
     }
 
