@@ -35,14 +35,10 @@ namespace ChatR.Controllers
         //[Route("/getHistory")]
         public async Task<ActionResult<IEnumerable<MessageDTO>>> GetHistory()
         {
-            var messagesDTO = new List<MessageDTO>();
-            var messages = await _context.Messages.ToListAsync();
-            foreach (var message in messages)
-            {
-                var newMessage = new MessageDTO(message);
-                messagesDTO.Add(newMessage);
-            }
-            return messagesDTO;
+            var listOfMessages = await _context.Messages.ToListAsync();
+            var messagesDTO = from m in listOfMessages
+                                 select new MessageDTO(m);
+            return messagesDTO.ToList();
         }
 
         // GET: api/MessagesData/5
