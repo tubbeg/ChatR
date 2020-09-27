@@ -23,8 +23,8 @@ namespace ChatR.Models
         }
             /* Update 2020:08:20. Apparently there are DTO objects
              * (data transfer objects). These can be used to protect
-             * against overposting attacks. This might not be a
-             * perfect solution, but it works.
+             * against overposting attacks among other things.
+             * This might not be a perfect solution, but it works.
              * See https://go.microsoft.com/fwlink/?linkid=2123754.
              */
 

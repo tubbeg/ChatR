@@ -9,6 +9,7 @@ const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
 const tbUser: HTMLInputElement = document.querySelector("#tbUser");
 const btnSend: HTMLButtonElement = document.querySelector("#btnSend");
 const messages: HTMLDivElement = document.querySelector("#messages");
+const currentGroupElement: HTMLDivElement = document.querySelector("#currentGroup");
 
 let messageList = new MessageList(messages);
 
@@ -16,23 +17,36 @@ const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
 
-console.log(fetch("/api/history")
+let listOfGroups = new Array<string>();
+
+fetch("/api/groups/")
+    .then(response => response.json())
+    .then((result) => { result.forEach((item) => listOfGroups.push(item.name)) });
+
+console.log("list of groups:");
+console.log(listOfGroups);
+
+listOfGroups.forEach((item) => console.log(item));
+let currentGroup = "General";
+
+currentGroupElement.innerHTML = "#" + currentGroup;
+
+fetch("/api/history/" + currentGroup)
     .then(response => response.json())
     .then((result) => messageList.setList(result))
     .then(() => messageList.render())
-    .then(() => window.scrollTo(0, document.body.scrollHeight)));
+    .then(() => window.scrollTo(0, document.body.scrollHeight));
 
 let user = "";
 
 
-connection.on("messageReceived", (message : Message, date : string) => {
-    console.log(message);
+connection.on("messageReceived", (message : Message) => {
+    console.log(message);/*
     console.log(date);
     let newDate = new Date(date);
-    console.log(date);
+    console.log(date);*/
     messageList.appendMessage(message);
     messageList.render();
-    window.scrollTo(0, document.body.scrollHeight);
 });
 
 connection.start()
@@ -56,9 +70,10 @@ function send() {
         type: contentType,
         date: moment(date)
     }
-    connection.send("AddMessage", message)
+    connection.send("AddMessage", message, currentGroup)
         .then(() => tbMessage.value = "")
-        .catch((err) => { console.log(err)});
+        .catch((err) => { console.log(err) });
+    window.scrollTo(0, document.body.scrollHeight);
 }
 
 

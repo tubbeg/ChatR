@@ -28,17 +28,70 @@ namespace ChatR.Controllers
             return await _context.Messages.ToListAsync();
         }
 
-
         // GET: api/MessageHistory
-        [HttpGet]
         [Route("~/api/history")]
+        [HttpGet("~/api/history/{groupName}")]
         //[Route("/getHistory")]
-        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetHistory()
+        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetHistory(string groupName)
         {
-            var listOfMessages = await _context.Messages.ToListAsync();
-            var messagesDTO = from m in listOfMessages
-                                 select new MessageDTO(m);
-            return messagesDTO.ToList();
+            try
+            {
+                var messageGroup = await GetGroup(groupName);
+                var listOfMessages = await _context.Messages.ToListAsync();
+                var messagesDTO = from m in listOfMessages
+                                  select new MessageDTO(m);
+                return messagesDTO.ToList();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new List<MessageDTO>();
+            }
+
+        }
+            /*
+            // GET: api/MessageHistory
+            [HttpGet]
+            [Route("~/api/history")]
+            //[Route("/getHistory")]
+            public async Task<ActionResult<IEnumerable<MessageDTO>>> GetHistory(string groupName, int? high, int? low)
+            {
+                try
+                {
+                    var messageGroup = await GetGroup(groupName);
+                    var listOfMessages = await _context.Messages.ToListAsync();
+                    var messagesDTO = from m in listOfMessages
+                                      where HasGroup(m, messageGroup, high, low)
+                                      select new MessageDTO(m);
+                    return messagesDTO.ToList();
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e);
+                    return new List<MessageDTO>();
+                }
+            }*/
+
+            private bool HasGroup(Message message, Group group, int? high, int? low)
+        {
+            if ((high != null) && (low != null))
+                return (message.Key < high) && (message.Key > low) && (message.Group == group);
+            return (message.Group == group);
+        }
+
+        private async Task<Group> GetGroup(string groupName)
+        {
+            var listOfGroups = await _context.Groups.ToListAsync();
+            var groupsWithMatchingNames = from g in listOfGroups
+                                          where g.Name == groupName
+                                          select g;
+            if (!groupsWithMatchingNames.Any())
+                throw new NoGroupFoundException();
+            return groupsWithMatchingNames.First();
+        }
+
+        private class NoGroupFoundException : Exception
+        {
         }
 
         // GET: api/MessagesData/5
