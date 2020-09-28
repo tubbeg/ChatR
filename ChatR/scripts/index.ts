@@ -10,50 +10,48 @@ const tbUser: HTMLInputElement = document.querySelector("#tbUser");
 const btnSend: HTMLButtonElement = document.querySelector("#btnSend");
 const messages: HTMLDivElement = document.querySelector("#messages");
 const currentGroupElement: HTMLDivElement = document.querySelector("#currentGroup");
+const previous: HTMLButtonElement = document.querySelector("#previous");
+const next: HTMLButtonElement = document.querySelector("#next");
 
-let messageList = new MessageList(messages);
+//let messageList = new MessageList(messages);
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
 
 let listOfGroups = new Array<string>();
-
+let listOfLists = new Array<MessageList>();
 let currentGroup = "N/A";
+let currentIndex = 0;
 
 fetch("/api/groups/")
     .then(response => response.json())
-    .then((result) => { result.forEach((item) => listOfGroups.push(item.name)) })
-    .then(() => {currentGroup = listOfGroups[0];})
+    .then((result) => {
+        result.forEach((item) => {
+            listOfGroups.push(item.name);
+            listOfLists.push(new MessageList(messages));
+        })
+    })
+    .then(() => {
+        currentIndex = listOfGroups.length - 1;
+        currentGroup = listOfGroups[currentIndex];
+    })
     .then(() => { currentGroupElement.innerHTML = "#" + currentGroup; })
-    .then(() => getHistory());
+    .then(() => getHistory(currentGroup));
 
-//console.log("list of groups:");
-//console.log(listOfGroups);
-
-//console.log(Object.keys(listOfGroups));
-//listOfGroups.forEach((item) => console.log(Object.keys(item)));
-//listOfGroups.forEach((item) => console.log(item));
-
-//tror det blir problem när den hämtar en grupp asynkront
-
-//currentgroup används innan listOfGroups assignas till result. Går bra när man debuggar.
-
-
-function getHistory() {
-    fetch("/api/history/" + currentGroup)
+function getHistory(myGroup : string) {
+    fetch("/api/history/" + myGroup)
         .then(response => response.json())
-        .then((result) => messageList.setList(result))
-        .then(() => messageList.render())
+        .then((result) => listOfLists[currentIndex].setList(result))
+        .then(() => listOfLists[currentIndex].render())
         .then(() => window.scrollTo(0, document.body.scrollHeight));
 }
-let user = "";
 
 
 connection.on("messageReceived", (message : Message) => {
     console.log(message);
-    messageList.appendMessage(message);
-    messageList.render();
+    listOfLists[currentIndex].appendMessage(message);
+    listOfLists[currentIndex].render();
 });
 
 connection.start()
@@ -83,5 +81,28 @@ function send() {
     window.scrollTo(0, document.body.scrollHeight);
 }
 
+function updateCurrentGroup() {
+    currentGroupElement.innerHTML = "#" + currentGroup;
+    if (listOfLists[currentIndex].history.length < 1)
+        getHistory(currentGroup);
+    listOfLists[currentIndex].render();
+}
 
 btnSend.addEventListener("click", send);
+next.addEventListener("click", () => {
+    if (currentIndex > 0)
+        currentIndex = currentIndex - 1;
+    else
+        currentIndex = listOfGroups.length - 1;
+    currentGroup = listOfGroups[currentIndex];
+    updateCurrentGroup();
+});
+
+previous.addEventListener("click", () => {
+    if (currentIndex < (listOfGroups.length - 1))
+        currentIndex = currentIndex + 1;
+    else
+        currentIndex = 0;
+    currentGroup = listOfGroups[currentIndex];
+    updateCurrentGroup();
+});

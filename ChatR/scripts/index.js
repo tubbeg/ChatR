@@ -10,30 +10,40 @@ var tbUser = document.querySelector("#tbUser");
 var btnSend = document.querySelector("#btnSend");
 var messages = document.querySelector("#messages");
 var currentGroupElement = document.querySelector("#currentGroup");
-var messageList = new messageUI_1.MessageList(messages);
+var previous = document.querySelector("#previous");
+var next = document.querySelector("#next");
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
 var listOfGroups = new Array();
+var listOfLists = new Array();
 var currentGroup = "N/A";
+var currentIndex = 0;
 fetch("/api/groups/")
     .then(function (response) { return response.json(); })
-    .then(function (result) { result.forEach(function (item) { return listOfGroups.push(item.name); }); })
-    .then(function () { currentGroup = listOfGroups[0]; })
+    .then(function (result) {
+    result.forEach(function (item) {
+        listOfGroups.push(item.name);
+        listOfLists.push(new messageUI_1.MessageList(messages));
+    });
+})
+    .then(function () {
+    currentIndex = listOfGroups.length - 1;
+    currentGroup = listOfGroups[currentIndex];
+})
     .then(function () { currentGroupElement.innerHTML = "#" + currentGroup; })
-    .then(function () { return getHistory(); });
-function getHistory() {
-    fetch("/api/history/" + currentGroup)
+    .then(function () { return getHistory(currentGroup); });
+function getHistory(myGroup) {
+    fetch("/api/history/" + myGroup)
         .then(function (response) { return response.json(); })
-        .then(function (result) { return messageList.setList(result); })
-        .then(function () { return messageList.render(); })
+        .then(function (result) { return listOfLists[currentIndex].setList(result); })
+        .then(function () { return listOfLists[currentIndex].render(); })
         .then(function () { return window.scrollTo(0, document.body.scrollHeight); });
 }
-var user = "";
 connection.on("messageReceived", function (message) {
     console.log(message);
-    messageList.appendMessage(message);
-    messageList.render();
+    listOfLists[currentIndex].appendMessage(message);
+    listOfLists[currentIndex].render();
 });
 connection.start()
     .then(function () { console.log("connection started"); })
@@ -59,4 +69,26 @@ function send() {
         .catch(function (err) { console.log(err); });
     window.scrollTo(0, document.body.scrollHeight);
 }
+function updateCurrentGroup() {
+    currentGroupElement.innerHTML = "#" + currentGroup;
+    if (listOfLists[currentIndex].history.length < 1)
+        getHistory(currentGroup);
+    listOfLists[currentIndex].render();
+}
 btnSend.addEventListener("click", send);
+next.addEventListener("click", function () {
+    if (currentIndex > 0)
+        currentIndex = currentIndex - 1;
+    else
+        currentIndex = listOfGroups.length - 1;
+    currentGroup = listOfGroups[currentIndex];
+    updateCurrentGroup();
+});
+previous.addEventListener("click", function () {
+    if (currentIndex < (listOfGroups.length - 1))
+        currentIndex = currentIndex + 1;
+    else
+        currentIndex = 0;
+    currentGroup = listOfGroups[currentIndex];
+    updateCurrentGroup();
+});

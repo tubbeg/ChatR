@@ -39,6 +39,7 @@ namespace ChatR.Controllers
                 var messageGroup = await GetGroup(groupName);
                 var listOfMessages = await _context.Messages.ToListAsync();
                 var messagesDTO = from m in listOfMessages
+                                  where m.Group == messageGroup
                                   select new MessageDTO(m);
                 return messagesDTO.ToList();
             }
