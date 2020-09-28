@@ -19,32 +19,39 @@ const connection = new signalR.HubConnectionBuilder()
 
 let listOfGroups = new Array<string>();
 
+let currentGroup = "N/A";
+
 fetch("/api/groups/")
     .then(response => response.json())
-    .then((result) => { result.forEach((item) => listOfGroups.push(item.name)) });
+    .then((result) => { result.forEach((item) => listOfGroups.push(item.name)) })
+    .then(() => {currentGroup = listOfGroups[0];})
+    .then(() => { currentGroupElement.innerHTML = "#" + currentGroup; })
+    .then(() => getHistory());
 
-console.log("list of groups:");
-console.log(listOfGroups);
+//console.log("list of groups:");
+//console.log(listOfGroups);
 
-listOfGroups.forEach((item) => console.log(item));
-let currentGroup = "General";
+//console.log(Object.keys(listOfGroups));
+//listOfGroups.forEach((item) => console.log(Object.keys(item)));
+//listOfGroups.forEach((item) => console.log(item));
 
-currentGroupElement.innerHTML = "#" + currentGroup;
+//tror det blir problem när den hämtar en grupp asynkront
 
-fetch("/api/history/" + currentGroup)
-    .then(response => response.json())
-    .then((result) => messageList.setList(result))
-    .then(() => messageList.render())
-    .then(() => window.scrollTo(0, document.body.scrollHeight));
+//currentgroup används innan listOfGroups assignas till result. Går bra när man debuggar.
 
+
+function getHistory() {
+    fetch("/api/history/" + currentGroup)
+        .then(response => response.json())
+        .then((result) => messageList.setList(result))
+        .then(() => messageList.render())
+        .then(() => window.scrollTo(0, document.body.scrollHeight));
+}
 let user = "";
 
 
 connection.on("messageReceived", (message : Message) => {
-    console.log(message);/*
-    console.log(date);
-    let newDate = new Date(date);
-    console.log(date);*/
+    console.log(message);
     messageList.appendMessage(message);
     messageList.render();
 });
