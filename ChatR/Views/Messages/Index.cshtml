@@ -10,9 +10,9 @@
     <input id="tbUser" type="text" class="form-control" placeholder="Username" aria-label="Text input with dropdown button">
     <div class="input-group-append">
         <span class="input-group-text text-black-50" id="currentGroup">#myGroup</span>
-        <button class="btn btn-outline-secondary" id="previous" type="button" aria-expanded="false"><</button>
-        <button class="btn btn-outline-secondary" id="next" type="button" aria-expanded="false">></button>
-        <button class="btn btn-outline-secondary" id="btnSend" type="button" aria-expanded="false">Send</button>
+        <button class="btn btn-outline-secondary" id="previous" type="button" aria-expanded="false" disabled>Prev</button>
+        <button class="btn btn-outline-secondary" id="next" type="button" aria-expanded="false" disabled>Next</button>
+        <button class="btn btn-outline-secondary" id="btnSend" type="button" aria-expanded="false" disabled>Send</button>
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Options</button>
         <div class="dropdown-menu">
             <button class="dropdown-item"> Action</button>
@@ -24,5 +24,11 @@
     </div>
 </div>
 
+
+<div id="" class="fixed-top d-flex justify-content-start">
+    <div class="spinner-border float-right" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
 
 <script src="~/js/main.js"></script>

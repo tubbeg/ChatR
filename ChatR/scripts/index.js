@@ -12,6 +12,8 @@ var messages = document.querySelector("#messages");
 var currentGroupElement = document.querySelector("#currentGroup");
 var previous = document.querySelector("#previous");
 var next = document.querySelector("#next");
+var spinner = document.querySelector("#spinner");
+disableButtons();
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
@@ -34,11 +36,13 @@ fetch("/api/groups/")
     .then(function () { currentGroupElement.innerHTML = "#" + currentGroup; })
     .then(function () { return getHistory(currentGroup); });
 function getHistory(myGroup) {
+    disableButtons();
     fetch("/api/history/" + myGroup)
         .then(function (response) { return response.json(); })
         .then(function (result) { return listOfLists[currentIndex].setList(result); })
         .then(function () { return listOfLists[currentIndex].render(); })
-        .then(function () { return window.scrollTo(0, document.body.scrollHeight); });
+        .then(function () { return window.scrollTo(0, document.body.scrollHeight); })
+        .then(function () { return enableButtons(); });
 }
 connection.on("messageReceived", function (message) {
     console.log(message);
@@ -92,3 +96,15 @@ previous.addEventListener("click", function () {
     currentGroup = listOfGroups[currentIndex];
     updateCurrentGroup();
 });
+function enableButtons() {
+    next.disabled = false;
+    previous.disabled = false;
+    btnSend.disabled = false;
+    spinner.style.display = " ";
+}
+function disableButtons() {
+    next.disabled = true;
+    previous.disabled = true;
+    btnSend.disabled = true;
+    spinner.style.display = "none";
+}

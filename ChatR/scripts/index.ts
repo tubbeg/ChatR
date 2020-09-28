@@ -12,9 +12,11 @@ const messages: HTMLDivElement = document.querySelector("#messages");
 const currentGroupElement: HTMLDivElement = document.querySelector("#currentGroup");
 const previous: HTMLButtonElement = document.querySelector("#previous");
 const next: HTMLButtonElement = document.querySelector("#next");
+const spinner: HTMLDivElement = document.querySelector("#spinner");
 
 //let messageList = new MessageList(messages);
 
+disableButtons();
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
@@ -39,12 +41,14 @@ fetch("/api/groups/")
     .then(() => { currentGroupElement.innerHTML = "#" + currentGroup; })
     .then(() => getHistory(currentGroup));
 
-function getHistory(myGroup : string) {
+function getHistory(myGroup: string) {
+    disableButtons();
     fetch("/api/history/" + myGroup)
         .then(response => response.json())
         .then((result) => listOfLists[currentIndex].setList(result))
         .then(() => listOfLists[currentIndex].render())
-        .then(() => window.scrollTo(0, document.body.scrollHeight));
+        .then(() => window.scrollTo(0, document.body.scrollHeight))
+        .then(() => enableButtons());
 }
 
 
@@ -106,3 +110,19 @@ previous.addEventListener("click", () => {
     currentGroup = listOfGroups[currentIndex];
     updateCurrentGroup();
 });
+
+function enableButtons() {
+    next.disabled = false;
+    previous.disabled = false;
+    btnSend.disabled = false;
+    //btnSend.textContent = "Send";
+    spinner.style.display = " ";
+}
+
+function disableButtons() {
+    next.disabled = true;
+    previous.disabled = true;
+    btnSend.disabled = true;
+    //btnSend.textContent = "Loading...";
+    spinner.style.display = "none";
+}
