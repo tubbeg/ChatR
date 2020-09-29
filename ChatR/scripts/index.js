@@ -12,7 +12,6 @@ var messages = document.querySelector("#messages");
 var currentGroupElement = document.querySelector("#currentGroup");
 var previous = document.querySelector("#previous");
 var next = document.querySelector("#next");
-var spinner = document.querySelector("#spinner");
 disableButtons();
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
@@ -58,6 +57,8 @@ tbMessage.addEventListener("keyup", function (e) {
     }
 });
 function send() {
+    if (hasNullValues())
+        return;
     var contentType = message_1.MessageType.Text;
     if (checkString_1.isImage(tbMessage.value))
         contentType = message_1.MessageType.Image;
@@ -72,6 +73,17 @@ function send() {
         .then(function () { return tbMessage.value = ""; })
         .catch(function (err) { console.log(err); });
     window.scrollTo(0, document.body.scrollHeight);
+}
+function hasNullValues() {
+    if (tbMessage.value == "")
+        return true;
+    if (tbUser.value == "")
+        return true;
+    if (tbUser.value == null)
+        return true;
+    if (tbMessage.value == null)
+        return true;
+    return false;
 }
 function updateCurrentGroup() {
     currentGroupElement.innerHTML = "#" + currentGroup;
@@ -100,11 +112,9 @@ function enableButtons() {
     next.disabled = false;
     previous.disabled = false;
     btnSend.disabled = false;
-    spinner.style.display = " ";
 }
 function disableButtons() {
     next.disabled = true;
     previous.disabled = true;
     btnSend.disabled = true;
-    spinner.style.display = "none";
 }

@@ -22,6 +22,9 @@ namespace ChatR.Data
             modelBuilder.Entity<Group>()
                 .HasIndex(g => g.Name)
                 .IsUnique();
+            modelBuilder.Entity<Group>()
+                .HasIndex(g => g.Connections)
+                .IsUnique();
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.Group)
                 .WithMany(g => g.Messages)

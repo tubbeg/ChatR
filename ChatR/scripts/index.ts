@@ -3,7 +3,7 @@ import { validURL, isImage } from "./checkString";
 import { parseMessage, Message, MessageType } from "./message";
 import { MessageList } from "./messageUI";
 import * as $ from "jquery";
-import * as moment from "moment"
+import * as moment from "moment";
 
 const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
 const tbUser: HTMLInputElement = document.querySelector("#tbUser");
@@ -12,7 +12,6 @@ const messages: HTMLDivElement = document.querySelector("#messages");
 const currentGroupElement: HTMLDivElement = document.querySelector("#currentGroup");
 const previous: HTMLButtonElement = document.querySelector("#previous");
 const next: HTMLButtonElement = document.querySelector("#next");
-const spinner: HTMLDivElement = document.querySelector("#spinner");
 
 //let messageList = new MessageList(messages);
 
@@ -69,6 +68,8 @@ tbMessage.addEventListener("keyup", (e: KeyboardEvent) => {
 });
 
 function send() {
+    if (hasNullValues())
+        return;
     let contentType = MessageType.Text;
     if (isImage(tbMessage.value))
         contentType = MessageType.Image;
@@ -83,6 +84,18 @@ function send() {
         .then(() => tbMessage.value = "")
         .catch((err) => { console.log(err) });
     window.scrollTo(0, document.body.scrollHeight);
+}
+
+function hasNullValues() : boolean {
+    if (tbMessage.value == "")
+        return true;
+    if (tbUser.value == "")
+        return true;
+    if (tbUser.value == null)
+        return true;
+    if (tbMessage.value == null)
+        return true;
+    return false;
 }
 
 function updateCurrentGroup() {
@@ -115,14 +128,10 @@ function enableButtons() {
     next.disabled = false;
     previous.disabled = false;
     btnSend.disabled = false;
-    //btnSend.textContent = "Send";
-    spinner.style.display = " ";
 }
 
 function disableButtons() {
     next.disabled = true;
     previous.disabled = true;
     btnSend.disabled = true;
-    //btnSend.textContent = "Loading...";
-    spinner.style.display = "none";
 }

@@ -28,7 +28,7 @@ namespace ChatR.Controllers
             return await _context.Groups.ToListAsync();
         }
 
-        // GET: api/Groups/5
+        /*// GET: api/Groups/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Group>> GetGroup(int id)
         {
@@ -100,7 +100,7 @@ namespace ChatR.Controllers
             await _context.SaveChangesAsync();
 
             return @group;
-        }
+        }*/
 
         private bool GroupExists(int id)
         {
