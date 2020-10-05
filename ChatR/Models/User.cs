@@ -13,7 +13,6 @@ namespace ChatR.Models
         //There are MUCH better ways of setting up authentication but this
         //is used for simplicity's sake
         public string Username { get; set; }
-        public string UserIdentifier { get; set; }
 
         public ICollection<Message> Messages { get; set; }
     }
@@ -21,7 +20,5 @@ namespace ChatR.Models
     public interface IUser
     {
         public string Username { get; set; }
-
-        public string UserIdentifier { get; set; }
     }
 }

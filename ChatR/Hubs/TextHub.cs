@@ -23,40 +23,6 @@ namespace ChatR.Hubs
             _scopeFactory = scopeFactory;
         }
 
-        private async Task AddToGroup(string groupName)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-        }
-
-        private async Task RemoveFromGroup(string groupName)
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-        }
-
-
-        public async Task<bool> CreateGroup(string groupName)
-        {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
-                var listOfGroups = await context.Groups.ToListAsync();
-                var groupsWithMatchingNames = from grps in listOfGroups
-                                              where grps.Name == groupName
-                                              select grps;
-                if (groupsWithMatchingNames.Count() < 1)
-                {
-                    var group = new Group()
-                    {
-                        Name = groupName
-                    };
-                    context.Groups.Add(group);
-                    return true;
-                }
-                return false;
-            }
-        }
-
-
         //can't use interface as parameter which would be very convenient :\ 
         public async Task AddMessage(MessageDTO message, string groupName)
         {
@@ -78,7 +44,6 @@ namespace ChatR.Hubs
             {
                 chatMessage.Group = await FindGroup(groupName, context);
                 context.Messages.Add(chatMessage);
-                await AddToGroup(groupName);
                 await context.SaveChangesAsync();
                 return true;
             }

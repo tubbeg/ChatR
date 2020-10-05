@@ -30,7 +30,7 @@ namespace ChatR.Models
 
             [Key]
         public int Key { get; set; }
-        public Group Group { get; set; }
+        public User User { get; set; }
         public string Author { get; set; }
         public string Content { get; set; }
         public MessageType Type { get; set; }

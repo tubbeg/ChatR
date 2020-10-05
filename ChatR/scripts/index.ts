@@ -9,9 +9,6 @@ const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
 const tbUser: HTMLInputElement = document.querySelector("#tbUser");
 const btnSend: HTMLButtonElement = document.querySelector("#btnSend");
 const messages: HTMLDivElement = document.querySelector("#messages");
-const currentGroupElement: HTMLDivElement = document.querySelector("#currentGroup");
-const previous: HTMLButtonElement = document.querySelector("#previous");
-const next: HTMLButtonElement = document.querySelector("#next");
 
 //let messageList = new MessageList(messages);
 
@@ -98,31 +95,7 @@ function hasNullValues() : boolean {
     return false;
 }
 
-function updateCurrentGroup() {
-    currentGroupElement.innerHTML = "#" + currentGroup;
-    if (listOfLists[currentIndex].history.length < 1)
-        getHistory(currentGroup);
-    listOfLists[currentIndex].render();
-}
-
 btnSend.addEventListener("click", send);
-next.addEventListener("click", () => {
-    if (currentIndex > 0)
-        currentIndex = currentIndex - 1;
-    else
-        currentIndex = listOfGroups.length - 1;
-    currentGroup = listOfGroups[currentIndex];
-    updateCurrentGroup();
-});
-
-previous.addEventListener("click", () => {
-    if (currentIndex < (listOfGroups.length - 1))
-        currentIndex = currentIndex + 1;
-    else
-        currentIndex = 0;
-    currentGroup = listOfGroups[currentIndex];
-    updateCurrentGroup();
-});
 
 function enableButtons() {
     next.disabled = false;
