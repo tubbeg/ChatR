@@ -38,16 +38,16 @@ namespace ChatR.Hubs
         }
         private async Task<bool> PostMessage(IMessage message, MessageContext context)
         {
-
             var chatMessage = new Message(message);
             try
             {
-                var user = await FindUser(context);
+                var user = await FindUser(context, message.Author);
                 if (user == null)
-                    //add user
-                else
-                        //get user
-                context.Users.Add(user);
+                {    
+                    user = new User { Username = message.Author };
+                    context.Users.Add(user);
+                }
+                chatMessage.User = user;
                 context.Messages.Add(chatMessage);
                 await context.SaveChangesAsync();
                 return true;
@@ -59,16 +59,15 @@ namespace ChatR.Hubs
             return false;
         }
 
-        private async Task<User> GetUser(MessageContext context)
+        private async Task<User> FindUser(MessageContext context, string userName)
         {
-            context.Users;
-
-        }
-
-        private async Task<User> FindUser(MessageContext context)
-        {
-
-            return null;
+            var listOfUsers = await context.Users.ToListAsync();
+            var usersWithMatchingNames = from u in listOfUsers
+                                         where u.Username == userName
+                                         select u;
+            if (!usersWithMatchingNames.Any())
+                return null;
+            return usersWithMatchingNames.First();
         }
     }
 
