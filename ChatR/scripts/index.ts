@@ -10,48 +10,25 @@ const tbUser: HTMLInputElement = document.querySelector("#tbUser");
 const btnSend: HTMLButtonElement = document.querySelector("#btnSend");
 const messages: HTMLDivElement = document.querySelector("#messages");
 
-//let messageList = new MessageList(messages);
+let messageList = new MessageList(messages);
 
-disableButtons();
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub")
     .build();
 
-let listOfGroups = new Array<string>();
-let listOfLists = new Array<MessageList>();
-let currentGroup = "N/A";
-let currentIndex = 0;
-
-fetch("/api/groups/")
-    .then(response => response.json())
-    .then((result) => {
-        result.forEach((item) => {
-            listOfGroups.push(item.name);
-            listOfLists.push(new MessageList(messages));
-        })
-    })
-    .then(() => {
-        currentIndex = listOfGroups.length - 1;
-        currentGroup = listOfGroups[currentIndex];
-    })
-    .then(() => { currentGroupElement.innerHTML = "#" + currentGroup; })
-    .then(() => getHistory(currentGroup));
-
-function getHistory(myGroup: string) {
-    disableButtons();
-    fetch("/api/history/" + myGroup)
+function getHistory() {
+    fetch("/api/history/")
         .then(response => response.json())
-        .then((result) => listOfLists[currentIndex].setList(result))
-        .then(() => listOfLists[currentIndex].render())
-        .then(() => window.scrollTo(0, document.body.scrollHeight))
-        .then(() => enableButtons());
+        .then((result) => messageList.setList(result))
+        .then(() => messageList.render())
+        .then(() => window.scrollTo(0, document.body.scrollHeight));
 }
 
 
 connection.on("messageReceived", (message : Message) => {
     console.log(message);
-    listOfLists[currentIndex].appendMessage(message);
-    listOfLists[currentIndex].render();
+    messageList.appendMessage(message);
+    messageList.render();
 });
 
 connection.start()
@@ -77,7 +54,7 @@ function send() {
         type: contentType,
         date: moment(date)
     }
-    connection.send("AddMessage", message, currentGroup)
+    connection.send("AddMessage", message)
         .then(() => tbMessage.value = "")
         .catch((err) => { console.log(err) });
     window.scrollTo(0, document.body.scrollHeight);
@@ -98,13 +75,14 @@ function hasNullValues() : boolean {
 btnSend.addEventListener("click", send);
 
 function enableButtons() {
-    next.disabled = false;
-    previous.disabled = false;
     btnSend.disabled = false;
 }
 
 function disableButtons() {
-    next.disabled = true;
-    previous.disabled = true;
     btnSend.disabled = true;
 }
+
+
+disableButtons();
+getHistory();
+enableButtons();

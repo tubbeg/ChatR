@@ -24,25 +24,30 @@ namespace ChatR.Hubs
         }
 
         //can't use interface as parameter which would be very convenient :\ 
-        public async Task AddMessage(MessageDTO message, string groupName)
+        public async Task AddMessage(MessageDTO message)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
                 message.Date = DateTime.UtcNow;
                 var context = scope.ServiceProvider.GetRequiredService<MessageContext>();
                 //Cannot deserialize into interface without custom jsonconverter
-                var groupExists = await PostMessage(message, groupName, context);
-                if (groupExists)
-                    await Clients.Group(groupName).SendAsync("messageReceived", message);
+                var hasSavedMessage = await PostMessage(message, context); 
+                if (hasSavedMessage)
+                    await Clients.All.SendAsync("messageReceived", message);
             }
         }
-        private async Task<bool> PostMessage(IMessage message, string groupName, MessageContext context)
+        private async Task<bool> PostMessage(IMessage message, MessageContext context)
         {
 
             var chatMessage = new Message(message);
             try
             {
-                chatMessage.Group = await FindGroup(groupName, context);
+                var user = await FindUser(context);
+                if (user == null)
+                    //add user
+                else
+                        //get user
+                context.Users.Add(user);
                 context.Messages.Add(chatMessage);
                 await context.SaveChangesAsync();
                 return true;
@@ -54,20 +59,16 @@ namespace ChatR.Hubs
             return false;
         }
 
-        private async Task<Group> FindGroup(string groupName, MessageContext context)
+        private async Task<User> GetUser(MessageContext context)
         {
-            var listOfGroups = await context.Groups.ToListAsync();
-            var groupsWithMatchingNames = from g in listOfGroups
-                                          where g.Name == groupName
-                                          select g;
-            if (!groupsWithMatchingNames.Any())
-                throw new NoGroupFoundException();
-            return groupsWithMatchingNames.First();
+            context.Users;
+
         }
 
-        private class NoGroupFoundException : Exception
+        private async Task<User> FindUser(MessageContext context)
         {
 
+            return null;
         }
     }
 

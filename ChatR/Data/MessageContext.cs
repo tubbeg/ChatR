@@ -15,18 +15,15 @@ namespace ChatR.Data
         }
 
         public DbSet<Message> Messages { get; set; }
-        public DbSet<Group> Groups { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Group>()
-                .HasIndex(g => g.Name)
-                .IsUnique();
-            modelBuilder.Entity<Group>()
-                .HasIndex(g => g.Connections)
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
                 .IsUnique();
             modelBuilder.Entity<Message>()
-                .HasOne(m => m.Group)
+                .HasOne(m => m.User)
                 .WithMany(g => g.Messages)
                 .IsRequired();
         }
