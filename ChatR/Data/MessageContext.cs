@@ -17,6 +17,8 @@ namespace ChatR.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<User> Users { get; set; }
 
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -24,7 +26,7 @@ namespace ChatR.Data
                 .IsUnique();
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.User)
-                .WithMany(g => g.Messages)
+                .WithMany(u => u.Messages)
                 .IsRequired();
         }
     }

@@ -30,16 +30,14 @@ namespace ChatR.Controllers
 
         // GET: api/MessageHistory
         [Route("~/api/history")]
-        [HttpGet("~/api/history/{groupName}")]
+        [HttpGet]
         //[Route("/getHistory")]
-        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetHistory(string groupName)
+        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetHistory()
         {
             try
             {
-                var messageGroup = await GetGroup(groupName);
                 var listOfMessages = await _context.Messages.ToListAsync();
                 var messagesDTO = from m in listOfMessages
-                                  where m.Group == messageGroup
                                   select new MessageDTO(m);
                 return messagesDTO.ToList();
             }
@@ -72,28 +70,6 @@ namespace ChatR.Controllers
                     return new List<MessageDTO>();
                 }
             }*/
-
-            private bool HasGroup(Message message, Group group, int? high, int? low)
-        {
-            if ((high != null) && (low != null))
-                return (message.Key < high) && (message.Key > low) && (message.Group == group);
-            return (message.Group == group);
-        }
-
-        private async Task<Group> GetGroup(string groupName)
-        {
-            var listOfGroups = await _context.Groups.ToListAsync();
-            var groupsWithMatchingNames = from g in listOfGroups
-                                          where g.Name == groupName
-                                          select g;
-            if (!groupsWithMatchingNames.Any())
-                throw new NoGroupFoundException();
-            return groupsWithMatchingNames.First();
-        }
-
-        private class NoGroupFoundException : Exception
-        {
-        }
 
         // GET: api/MessagesData/5
         [HttpGet("{id}")]
